@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
@@ -22,6 +23,7 @@ namespace TechnoBuy.Models
         public string Description { get; set; }
 
         [ValidateNever]
+        [DisplayName("Image")]
         public string ImageUrl { get; set; }
 
         [Required]
@@ -29,6 +31,7 @@ namespace TechnoBuy.Models
         public double Price { get; set; }
         public string Brand { get; set; }
 
+        [DisplayName("Category Id")]
         public int CategoryId { get; set; }
 
         [ForeignKey("CategoryId")]

@@ -20,4 +20,8 @@
     <ProjectReference Include="..\TechnoBuy.DataAccess\TechnoBuy.DataAccess.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\images\product\" />
+  </ItemGroup>
+
 </Project>
