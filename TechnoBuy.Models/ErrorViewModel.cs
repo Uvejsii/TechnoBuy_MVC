@@ -1,4 +1,4 @@
-namespace TechnoBuyWeb.Models
+namespace TechnoBuy.Models
 {
     public class ErrorViewModel
     {

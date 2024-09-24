@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
-using TechnoBuyWeb.Models;
+using TechnoBuy.Models;
 
 namespace TechnoBuyWeb.Controllers
 {
