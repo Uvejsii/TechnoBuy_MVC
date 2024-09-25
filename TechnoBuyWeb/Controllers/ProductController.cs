@@ -101,5 +101,67 @@ namespace TechnoBuyWeb.Controllers
                 return View(productVM);
             }
         }
+
+        public IActionResult Delete(int? id)
+        {
+            if (id == null || id == 0)
+            {
+                return NotFound();
+            }
+
+            ProductVM productVM = new ProductVM
+            {
+                Product = _unitOfWork.Product.Get(p => p.Id == id)
+            };
+
+            productVM.CategoryList = _unitOfWork.Category.GetAll().Select(c => new SelectListItem
+            {
+                Text = c.Name,
+                Value = c.Id.ToString(),
+            });
+
+            if (productVM.Product == null)
+            {
+                return NotFound();
+            }
+
+            return View(productVM);
+        }
+
+        [HttpPost, ActionName("Delete")]
+        public IActionResult DeleteProduct(int? id)
+        {
+            if (id == null || id == 0)
+            {
+                return NotFound();
+            }
+
+            ProductVM productVM = new ProductVM
+            {
+                Product = _unitOfWork.Product.Get(p => p.Id == id)
+            };
+
+            if (productVM.Product == null)
+            {
+                return NotFound();
+            }
+
+            string wwwRootPath = _webHostEnvironment.WebRootPath;
+
+            if (!string.IsNullOrEmpty(productVM.Product.ImageUrl))
+            {
+                var imagePath = Path.Combine(wwwRootPath, productVM.Product.ImageUrl.TrimStart('\\'));
+
+                if (System.IO.File.Exists(imagePath))
+                {
+                    System.IO.File.Delete(imagePath);
+                }
+            }
+
+            _unitOfWork.Product.Remove(productVM.Product);
+            _unitOfWork.Save();
+
+            return RedirectToAction("Index");
+        }
     }
 }
