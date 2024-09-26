@@ -1,12 +1,16 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using TechnoBuy.DataAccess.Repository;
 using TechnoBuy.DataAccess.Repository.IRepository;
 using TechnoBuy.Models;
 using TechnoBuy.Models.ViewModels;
+using TechnoBuy.Utility;
 
-namespace TechnoBuyWeb.Controllers
+namespace TechnoBuyWeb.Areas.Admin.Controllers
 {
+    [Area("Admin")]
+    [Authorize(Roles = SD.Role_Admin)]
     public class ProductController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;

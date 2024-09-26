@@ -3,8 +3,9 @@ using System.Diagnostics;
 using TechnoBuy.DataAccess.Repository.IRepository;
 using TechnoBuy.Models;
 
-namespace TechnoBuyWeb.Controllers
+namespace TechnoBuyWeb.Areas.Customer.Controllers
 {
+    [Area("Customer")]
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
@@ -27,7 +28,7 @@ namespace TechnoBuyWeb.Controllers
             return View();
         }
 
-        public IActionResult Detail(int? id) 
+        public IActionResult Detail(int? id)
         {
             if (id == null || id == 0)
             {
@@ -36,7 +37,7 @@ namespace TechnoBuyWeb.Controllers
 
             Product? objProduct = _unitOfWork.Product.Get(p => p.Id == id, includeProperties: "Category");
 
-            if (objProduct == null) 
+            if (objProduct == null)
             {
                 return NotFound();
             }

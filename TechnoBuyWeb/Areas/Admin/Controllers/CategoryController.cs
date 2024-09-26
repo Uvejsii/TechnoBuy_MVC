@@ -1,9 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using TechnoBuy.DataAccess.Repository.IRepository;
 using TechnoBuy.Models;
+using TechnoBuy.Utility;
 
-namespace TechnoBuyWeb.Controllers
+namespace TechnoBuyWeb.Areas.Admin.Controllers
 {
+    [Area("Admin")]
+    [Authorize(Roles = SD.Role_Admin)]
     public class CategoryController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
@@ -46,8 +50,8 @@ namespace TechnoBuyWeb.Controllers
 
             Category? categoryFromDb = _unitOfWork.Category.Get(c => c.Id == id);
 
-            if (categoryFromDb == null) 
-            { 
+            if (categoryFromDb == null)
+            {
                 return NotFound();
             }
 
@@ -55,7 +59,7 @@ namespace TechnoBuyWeb.Controllers
         }
 
         [HttpPost]
-        public IActionResult Edit(Category category) 
+        public IActionResult Edit(Category category)
         {
             if (ModelState.IsValid)
             {
@@ -68,7 +72,7 @@ namespace TechnoBuyWeb.Controllers
             return View();
         }
 
-        public IActionResult Delete(int? id) 
+        public IActionResult Delete(int? id)
         {
             if (id == null || id == 0)
             {

@@ -24,6 +24,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\TechnoBuy.DataAccess\TechnoBuy.DataAccess.csproj" />
+    <ProjectReference Include="..\TechnoBuy.Utility\TechnoBuy.Utility.csproj" />
   </ItemGroup>
 
   <ItemGroup>
