@@ -15,14 +15,14 @@
                             </div>
                             <div class="ps-1">
                                 <p class="text-dark text-opacity-75 text-center mb-0">
-                                    List Price: <span class="fw-bold">@product.Price.ToString("N2")</span>
+                                    Price: <span class="fw-bold">@product.Price.ToString("N2") $</span>
                                 </p>
                             </div>
                         </div>
                         <div>
                             <a asp-action="Detail"
                                asp-route-id="@product.Id" 
-                               class="btn btn-primary w-100 mt-2">
+                               class="btn btn-primary w-100 mt-2 fw-bold">
                                 Details
                             </a>
                         </div>

@@ -6,7 +6,7 @@
             <h2 class="text-primary">Product List</h2>
         </div>
         <div class="col-6 text-end">
-            <a asp-controller="Product" asp-action="Upsert" class="btn btn-primary">
+            <a asp-controller="Product" asp-action="Upsert" class="btn btn-success fw-bold">
                 <i class="bi bi-plus-circle"></i> Create New Product
             </a>
         </div>
@@ -25,6 +25,7 @@
                     <th>Brand</th>
                     <th>Category</th>
                     <th class="px-4">Price</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -33,17 +34,17 @@
                     <tr>
                         <td>@product.Name</td>
                         <td class="d-flex justify-content-center">
-                            <img src="@product.ImageUrl" width="40%" />
+                            <img src="@product.ImageUrl" width="120px" height="90px" style="object-fit: contain" />
                         </td>
                         <td>@product.Brand</td>
                         <td>@product.Category.Name</td>
                         <td>@product.Price.ToString("N2") $</td>
                         <td>
-                            <div class="w-75 btn-group" role="group">
-                                <a asp-controller="Product" asp-action="Upsert" asp-route-id="@product.Id" class="btn btn-warning mx-2">
+                            <div class="w-100 mt-3 d-flex gap-2 align-items-center btn-group" role="group">
+                                <a asp-controller="Product" asp-action="Upsert" asp-route-id="@product.Id" class="btn btn-warning d-flex flex-column w-50 fw-bold">
                                     <i class="bi bi-pencil-square"></i> Edit
                                 </a>
-                                <a asp-controller="Product" asp-action="Delete" asp-route-id="@product.Id" class="btn btn-danger mx-2">
+                                <a asp-controller="Product" asp-action="Delete" asp-route-id="@product.Id" class="btn btn-danger d-flex flex-column w-50 fw-bold">
                                     <i class="bi bi-trash-fill"></i> Delete
                                 </a>
                             </div>

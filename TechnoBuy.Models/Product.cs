@@ -28,7 +28,7 @@ namespace TechnoBuy.Models
 
         [Required]
         [Range(1, 3000)]
-        public double Price { get; set; }
+        public decimal Price { get; set; }
         public string Brand { get; set; }
 
         [DisplayName("Category Id")]
