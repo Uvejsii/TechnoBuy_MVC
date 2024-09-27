@@ -69,10 +69,12 @@
                         </div>
                         <div class="row">
                             <div class="col-12 col-md-6 pb-1">
-                                <button type="submit" disabled
-                                        class="btn btn-primary bg-gradient  w-100 py-2 text-uppercase fw-semibold">
-                                    Add to Cart (Comming Soon...)
-                                </button>
+                                <a asp-controller="Cart"
+                                   asp-action="AddToCart"
+                                   asp-route-id="@Model.Id"
+                                    class="btn btn-success bg-gradient w-100 py-2 text-uppercase fw-bold">
+                                    Add to Cart
+                                </a>
                             </div>
                         </div>
                     </div>

@@ -1,0 +1,14 @@
+﻿@model List<CartItem>
+
+<div class="container">
+    <h3>Your Added Items:</h3>
+    <div class="d-flex gap-5">
+        @foreach (var item in Model)
+        {
+            <div class="border w-50 rounded-3 shadow">
+                <h4>Name: @item.Product.Name, Qty: @item.Quantity, Price: @(item.Product.Price * item.Quantity) $</h4>
+                <img src="@item.Product.ImageUrl" />
+            </div>
+        }
+    </div>
+</div>

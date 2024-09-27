@@ -14,12 +14,16 @@ namespace TechnoBuy.DataAccess.Repository
 
         public IProductRepository Product { get; private set; }
         public ICategoryRepository Category { get; private set; }
+        public ICartRepository Cart { get; private set; }
+        public ICartItemRepository CartItem { get; private set; }
 
         public UnitOfWork(ApplicationDbContext db)
         {
             _db = db;
             Product = new ProductRepository(_db);
             Category = new CategoryRepository(_db);
+            Cart = new CartRepository(_db);
+            CartItem = new CartItemRepository(_db);
         }
 
         public void Save()

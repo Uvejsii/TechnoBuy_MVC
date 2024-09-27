@@ -20,9 +20,15 @@
                             </div>
                         </div>
                         <div>
+                            <a asp-controller="Cart" 
+                                asp-action="AddToCart" 
+                                asp-route-id="@product.Id" 
+                                class="btn btn-success w-100 my-2 fw-bold">
+                                Add to cart
+                            </a>
                             <a asp-action="Detail"
                                asp-route-id="@product.Id" 
-                               class="btn btn-primary w-100 mt-2 fw-bold">
+                               class="btn btn-primary w-100 fw-bold">
                                 Details
                             </a>
                         </div>
