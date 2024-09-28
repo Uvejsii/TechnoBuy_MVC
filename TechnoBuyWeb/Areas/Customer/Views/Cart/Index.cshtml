@@ -1,14 +1,57 @@
 ﻿@model List<CartItem>
 
 <div class="container">
-    <h3>Your Added Items:</h3>
-    <div class="d-flex gap-5">
-        @foreach (var item in Model)
+    <div class="d-flex justify-content-between">
+        <h3>Your Added Items:</h3>
+    </div>
+    <div class="d-flex flex-wrap">
+        @if (Model == null || !Model.Any())
         {
-            <div class="border w-50 rounded-3 shadow">
-                <h4>Name: @item.Product.Name, Qty: @item.Quantity, Price: @(item.Product.Price * item.Quantity) $</h4>
-                <img src="@item.Product.ImageUrl" />
-            </div>
+            <h1 class="text-center w-100">No Added Items</h1>
+        }
+        else
+        {
+            @foreach (var item in Model)
+            {
+                <div class="border w-50 rounded-3 p-3 shadow">
+                    <h4>Name: @item.Product.Name, Qty: @(item.Quantity)x, Price: @item.Product.Price.ToString("N2") $</h4>
+                    <img src="@item.Product.ImageUrl" />
+                    <div class="d-flex justify-content-between">
+                        <a asp-controller="Cart" 
+                        asp-action="Remove"
+                        asp-route-id="@item.Id"
+                        class="btn btn-danger fw-bold w-50">
+                            Remove <i class="bi bi-trash"></i>
+                        </a>
+                        <div>
+                            @if(item.Quantity == 1)
+                            {
+                                <a class="btn btn-warning fw-bold">
+                                    -
+                                </a>
+                            } 
+                            else
+                            {
+                                <a asp-controller="Cart"
+                                   asp-action="UpdateQty"
+                                   asp-route-id="@item.Id"
+                                   asp-route-change="-1"
+                                   class="btn btn-warning fw-bold update-qty">
+                                    -
+                                </a>
+                            }
+                            <span class="fw-bold">@item.Quantity</span>
+                            <a asp-controller="Cart"
+                               asp-action="UpdateQty"
+                               asp-route-id="@item.Id"
+                               asp-route-change="+1"
+                               class="btn btn-success fw-bold update-qty">
+                                +
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
         }
     </div>
 </div>

@@ -19,8 +19,8 @@ namespace TechnoBuyWeb.Areas.Customer.Controllers
 
         public IActionResult Index()
         {
-            var claimsIdentity = (ClaimsIdentity)User.Identity;
-            var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var claimsIdentity = (ClaimsIdentity?)User.Identity;
+            var userId = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
             if (userId == null)
             {
@@ -40,8 +40,8 @@ namespace TechnoBuyWeb.Areas.Customer.Controllers
 
         public IActionResult AddToCart(int id)
         {
-            var claimsIdentity = (ClaimsIdentity)User.Identity;
-            var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+            var claimsIdentity = (ClaimsIdentity?)User.Identity;
+            var userId = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
             var product = _unitOfWork.Product.Get(p => p.Id == id);
             if (product == null)
@@ -83,6 +83,59 @@ namespace TechnoBuyWeb.Areas.Customer.Controllers
             _unitOfWork.Save();
 
             return RedirectToAction("Index", "Home");
+        }
+
+        public IActionResult Remove(int? id)
+        {
+            if (id == null)
+            {
+                return BadRequest();
+            }
+
+            var claimsIdentity = (ClaimsIdentity?)User.Identity;
+            var userId = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (userId == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var cartItem = _unitOfWork.CartItem.Get(ci => ci.Id == id && ci.Cart.UserId == userId);
+
+            if (cartItem == null)
+            {
+                return NotFound();
+            }
+
+            _unitOfWork.CartItem.Remove(cartItem);
+            _unitOfWork.Save();
+
+            return RedirectToAction("Index");
+        }
+
+        public IActionResult UpdateQty(int? id, int change)
+        {
+            var claimsIdentity = (ClaimsIdentity?)User.Identity;
+            var userId = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (userId == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var cartItem = _unitOfWork.CartItem.Get(ci => ci.Id == id && ci.Cart.UserId == userId);
+
+            cartItem.Quantity += change;
+
+            if (cartItem.Quantity < 1)
+            {
+                return BadRequest("Quantity cannot be less than 1"); ;
+            }
+
+            _unitOfWork.CartItem.Update(cartItem);
+            _unitOfWork.Save();
+
+            return RedirectToAction(nameof(Index));
         }
     }
 }
