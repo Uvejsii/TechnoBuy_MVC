@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using TechnoBuy.DataAccess.Repository.IRepository;
+using TechnoBuy.DataAccess.Service.IService;
 using TechnoBuy.Models;
 
 namespace TechnoBuyWeb.Areas.Customer.Controllers
@@ -11,10 +12,12 @@ namespace TechnoBuyWeb.Areas.Customer.Controllers
     public class CartController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly ICartService _cartService;
 
-        public CartController(IUnitOfWork unitOfWork)
+        public CartController(IUnitOfWork unitOfWork, ICartService cartService)
         {
             _unitOfWork = unitOfWork;
+            _cartService = cartService;
         }
 
         public IActionResult Index()
@@ -34,6 +37,8 @@ namespace TechnoBuyWeb.Areas.Customer.Controllers
             }
 
             List<CartItem> cartItems = _unitOfWork.CartItem.GetAll(ci => ci.CartId == cart.Id, includeProperties: "Product").ToList();
+
+            ViewBag.CartQty = _cartService.GetCartQuantity(userId);
 
             return View(cartItems);
         }
@@ -136,6 +141,14 @@ namespace TechnoBuyWeb.Areas.Customer.Controllers
             _unitOfWork.Save();
 
             return RedirectToAction(nameof(Index));
+        }
+
+        public IActionResult GetCartItemCount()
+        {
+            var claimsIdentity = (ClaimsIdentity?)User.Identity;
+            var userId = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            return PartialView("_CartIconPartial", ViewBag.CartQty = _cartService.GetCartQuantity(userId));
         }
     }
 }

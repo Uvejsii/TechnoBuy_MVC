@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Security.Claims;
 using TechnoBuy.DataAccess.Repository;
 using TechnoBuy.DataAccess.Repository.IRepository;
+using TechnoBuy.DataAccess.Service.IService;
 using TechnoBuy.Models;
 using TechnoBuy.Models.ViewModels;
 using TechnoBuy.Utility;
@@ -14,17 +16,25 @@ namespace TechnoBuyWeb.Areas.Admin.Controllers
     public class ProductController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly ICartService _cartService;
         private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public ProductController(IUnitOfWork unitOfWork, IWebHostEnvironment webHostEnvironment)
+        public ProductController(IUnitOfWork unitOfWork, ICartService cartService, IWebHostEnvironment webHostEnvironment)
         {
             _unitOfWork = unitOfWork;
+            _cartService = cartService;
             _webHostEnvironment = webHostEnvironment;
         }
 
         public IActionResult Index()
         {
+            var claimsIdentity = (ClaimsIdentity?)User.Identity;
+            var userId = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
             List<Product> objProductList = _unitOfWork.Product.GetAll(includeProperties: "Category").ToList();
+            
+            ViewBag.CartQty = _cartService.GetCartQuantity(userId);
+            
             return View(objProductList);
         }
 

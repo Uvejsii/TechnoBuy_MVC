@@ -21,15 +21,18 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="Customer" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link text-dark" asp-area="Customer" asp-controller="Cart" asp-action="Index">
+                                <i class="bi bi-cart fs-4"></i>
+                                <partial name="_CartIconPartial" model="ViewBag.CartQty" />
+                            </a>
                         </li>
                         @if(User.IsInRole(SD.Role_Admin))
                         {
-                            <li class="nav-item dropdown">
+                            <li class="nav-item dropdown border rounded rounded-5 align-self-center ms-2">
                                 <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                     Content Managment
                                 </a>
-                                <ul class="dropdown-menu">
+                                <ul class="dropdown-menu shadow">
                                     <li class="nav-item">
                                         <a class="nav-link text-dark" asp-area="Admin" asp-controller="Category" asp-action="Index">Category</a>
                                     </li>
@@ -40,9 +43,6 @@
                                 </ul>
                             </li>
                         }
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="Customer" asp-controller="Cart" asp-action="Index">Cart</a>
-                        </li>
                     </ul>
                     <partial name="_LoginPartial" />
                 </div>

@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
+using System.Security.Claims;
 using TechnoBuy.DataAccess.Repository.IRepository;
+using TechnoBuy.DataAccess.Service.IService;
 using TechnoBuy.Models;
 
 namespace TechnoBuyWeb.Areas.Customer.Controllers
@@ -10,16 +12,24 @@ namespace TechnoBuyWeb.Areas.Customer.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly ICartService _cartService;
 
-        public HomeController(ILogger<HomeController> logger, IUnitOfWork unitOfWork)
+        public HomeController(ILogger<HomeController> logger, IUnitOfWork unitOfWork, ICartService cartService)
         {
             _logger = logger;
             _unitOfWork = unitOfWork;
+            _cartService = cartService;
         }
 
         public IActionResult Index()
         {
+            var claimsIdentity = (ClaimsIdentity?)User.Identity;
+            var userId = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
             List<Product> objProductList = _unitOfWork.Product.GetAll().ToList();
+
+            ViewBag.CartQty = _cartService.GetCartQuantity(userId);
+
             return View(objProductList);
         }
 
@@ -35,12 +45,17 @@ namespace TechnoBuyWeb.Areas.Customer.Controllers
                 return NotFound();
             }
 
+            var claimsIdentity = (ClaimsIdentity?)User.Identity;
+            var userId = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
             Product? objProduct = _unitOfWork.Product.Get(p => p.Id == id, includeProperties: "Category");
 
             if (objProduct == null)
             {
                 return NotFound();
             }
+
+            ViewBag.CartQty = _cartService.GetCartQuantity(userId);
 
             return View(objProduct);
         }

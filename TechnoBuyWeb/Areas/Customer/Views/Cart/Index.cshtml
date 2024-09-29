@@ -3,6 +3,7 @@
 <div class="container">
     <div class="d-flex justify-content-between">
         <h3>Your Added Items:</h3>
+        <h3>Items in cart: @ViewBag.CartQty</h3>
     </div>
     <div class="d-flex flex-wrap">
         @if (Model == null || !Model.Any())
@@ -36,7 +37,7 @@
                                    asp-action="UpdateQty"
                                    asp-route-id="@item.Id"
                                    asp-route-change="-1"
-                                   class="btn btn-warning fw-bold update-qty">
+                                   class="btn btn-warning fw-bold">
                                     -
                                 </a>
                             }
@@ -45,7 +46,7 @@
                                asp-action="UpdateQty"
                                asp-route-id="@item.Id"
                                asp-route-change="+1"
-                               class="btn btn-success fw-bold update-qty">
+                               class="btn btn-success fw-bold">
                                 +
                             </a>
                         </div>

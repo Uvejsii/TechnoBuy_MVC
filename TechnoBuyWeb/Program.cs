@@ -5,6 +5,8 @@ using TechnoBuy.DataAccess.Repository.IRepository;
 using Microsoft.AspNetCore.Identity;
 using TechnoBuy.Utility;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using TechnoBuy.DataAccess.Service;
+using TechnoBuy.DataAccess.Service.IService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,6 +26,7 @@ builder.Services.ConfigureApplicationCookie(options =>
 builder.Services.AddRazorPages();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IEmailSender, EmailSender>();
+builder.Services.AddScoped<ICartService, CartService>();
 
 var app = builder.Build();
 
