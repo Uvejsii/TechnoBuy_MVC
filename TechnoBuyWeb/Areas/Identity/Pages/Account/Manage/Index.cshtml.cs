@@ -3,12 +3,14 @@
 #nullable disable
 
 using System;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using TechnoBuy.Models;
 
 namespace TechnoBuyWeb.Areas.Identity.Pages.Account.Manage
 {
@@ -58,6 +60,14 @@ namespace TechnoBuyWeb.Areas.Identity.Pages.Account.Manage
             [Phone]
             [Display(Name = "Phone number")]
             public string PhoneNumber { get; set; }
+
+            //[Required]
+            //[DisplayName("Street Address")]
+            //public string? StreetAddress { get; set; }
+            //[Required]
+            //public string? City { get; set; }
+            //[Required]
+            //public string? Country { get; set; }
         }
 
         private async Task LoadAsync(IdentityUser user)
@@ -69,7 +79,10 @@ namespace TechnoBuyWeb.Areas.Identity.Pages.Account.Manage
 
             Input = new InputModel
             {
-                PhoneNumber = phoneNumber
+                PhoneNumber = phoneNumber,
+                //StreetAddress = user.StreetAddress,
+                //City = user.City,
+                //Country = user.Country
             };
         }
 

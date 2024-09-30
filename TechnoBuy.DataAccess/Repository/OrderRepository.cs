@@ -9,22 +9,17 @@ using TechnoBuy.Models;
 
 namespace TechnoBuy.DataAccess.Repository
 {
-    public class CartItemRepository : Repository<CartItem>, ICartItemRepository
+    public class OrderRepository : Repository<Order>, IOrderRepository
     {
         private ApplicationDbContext _db;
-        public CartItemRepository(ApplicationDbContext db) : base(db)
+        public OrderRepository(ApplicationDbContext db) : base(db)
         {
             _db = db;
         }
 
-        public void Update(CartItem cartItem)
+        public void Update(Order order)
         {
-            _db.Update(cartItem);
-        }
-
-        public void RemoveRange(IEnumerable<CartItem> cartItems)
-        {
-            _db.CartItems.RemoveRange(cartItems);
+            _db.Orders.Update(order);
         }
     }
 }

@@ -16,7 +16,8 @@ namespace TechnoBuy.DataAccess.Repository
         public ICategoryRepository Category { get; private set; }
         public ICartRepository Cart { get; private set; }
         public ICartItemRepository CartItem { get; private set; }
-
+        public IOrderRepository Order { get; private set; }
+        public IOrderItemRespository OrderItem {  get; private set; }
         public UnitOfWork(ApplicationDbContext db)
         {
             _db = db;
@@ -24,6 +25,8 @@ namespace TechnoBuy.DataAccess.Repository
             Category = new CategoryRepository(_db);
             Cart = new CartRepository(_db);
             CartItem = new CartItemRepository(_db);
+            Order = new OrderRepository(_db);
+            OrderItem = new OrderItemRepository(_db);
         }
 
         public void Save()

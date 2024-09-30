@@ -12,6 +12,8 @@ namespace TechnoBuy.DataAccess.Repository.IRepository
         IProductRepository Product { get; }
         ICartRepository Cart { get; }
         ICartItemRepository CartItem { get; }
+        IOrderRepository Order { get; }
+        IOrderItemRespository OrderItem { get; }
 
         void Save();
     }

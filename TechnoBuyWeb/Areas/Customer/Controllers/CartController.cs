@@ -38,7 +38,10 @@ namespace TechnoBuyWeb.Areas.Customer.Controllers
 
             List<CartItem> cartItems = _unitOfWork.CartItem.GetAll(ci => ci.CartId == cart.Id, includeProperties: "Product").ToList();
 
+            decimal totalAmount = cartItems.Sum(ci => ci.Quantity * ci.Product.Price);
+
             ViewBag.CartQty = _cartService.GetCartQuantity(userId);
+            ViewBag.TotalAmount = totalAmount;
 
             return View(cartItems);
         }
@@ -149,6 +152,69 @@ namespace TechnoBuyWeb.Areas.Customer.Controllers
             var userId = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
             return PartialView("_CartIconPartial", ViewBag.CartQty = _cartService.GetCartQuantity(userId));
+        }
+
+        [HttpPost]
+        public IActionResult MakeOrder(List<OrderItem> orderItems)
+        {
+            var claimsIdentity = (ClaimsIdentity?)(User.Identity);
+            var userId = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (userId == null)
+            {
+                return NotFound();
+            }
+
+            var cart = _unitOfWork.Cart.Get(c => c.UserId == userId, includeProperties: "CartItems");
+
+            var order = new Order
+            {
+                UserId = userId,
+                OrderDate = DateTime.Now,
+                Status = OrderStatus.Pending,
+                TotalAmount = 0,
+                OrderItems = new List<OrderItem>()
+            };
+
+            decimal totalAmount = 0;
+
+            foreach (var item in orderItems)
+            {
+                var product = _unitOfWork.Product.Get(p => p.Id == item.ProductId);
+
+                var orderItem = new OrderItem
+                {
+                    ProductId = item.ProductId,
+                    Product = product,
+                    Quantity = item.Quantity,
+                    Order = order
+                };
+
+                order.OrderItems.Add(orderItem);
+
+                totalAmount += product.Price * item.Quantity;
+            }
+
+            order.TotalAmount = totalAmount;
+
+            _unitOfWork.Order.Add(order);
+            _unitOfWork.CartItem.RemoveRange(cart.CartItems);
+            _unitOfWork.Save();
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        public IActionResult GetOrderItems()
+        {
+            var claimsIdentity = (ClaimsIdentity?)(User.Identity);
+            var userId = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            var orders = _unitOfWork.Order.Get(o => o.UserId == userId);
+
+            List<OrderItem> orderItems = _unitOfWork.OrderItem.GetAll(oi => oi.Order.UserId == userId, includeProperties: "Product, Order").ToList();
+
+
+            return View(orderItems);
         }
     }
 }

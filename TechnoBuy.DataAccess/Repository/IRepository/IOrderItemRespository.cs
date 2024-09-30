@@ -7,9 +7,8 @@ using TechnoBuy.Models;
 
 namespace TechnoBuy.DataAccess.Repository.IRepository
 {
-    public interface ICartItemRepository : IRepository<CartItem>
+    public interface IOrderItemRespository : IRepository<OrderItem>
     {
-        void Update(CartItem cartItem);
-        void RemoveRange(IEnumerable<CartItem> cartItems);
+        void Update(OrderItem orderItem);
     }
 }
