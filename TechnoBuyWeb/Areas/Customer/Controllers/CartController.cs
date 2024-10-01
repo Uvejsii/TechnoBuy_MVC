@@ -36,7 +36,7 @@ namespace TechnoBuyWeb.Areas.Customer.Controllers
                 return View(new List<CartItem>());
             }
 
-            List<CartItem> cartItems = _unitOfWork.CartItem.GetAll(ci => ci.CartId == cart.Id, includeProperties: "Product").ToList();
+            List<CartItem> cartItems = _unitOfWork.CartItem.GetAll(ci => ci.CartId == cart.Id, includeProperties: "Product,Cart.User").ToList();
 
             decimal totalAmount = cartItems.Sum(ci => ci.Quantity * ci.Product.Price);
 
@@ -204,17 +204,18 @@ namespace TechnoBuyWeb.Areas.Customer.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        public IActionResult GetOrderItems()
+        public IActionResult OrderItems()
         {
             var claimsIdentity = (ClaimsIdentity?)(User.Identity);
             var userId = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            var orders = _unitOfWork.Order.Get(o => o.UserId == userId);
+            var lastOrder = _unitOfWork.Order.GetAll(o => o.UserId == userId, includeProperties: "OrderItems.Product,User")
+                            .OrderByDescending(o => o.OrderDate)
+                            .FirstOrDefault();
 
-            List<OrderItem> orderItems = _unitOfWork.OrderItem.GetAll(oi => oi.Order.UserId == userId, includeProperties: "Product, Order").ToList();
+            ViewBag.CartQty = _cartService.GetCartQuantity(userId);
 
-
-            return View(orderItems);
+            return View(lastOrder);
         }
     }
 }

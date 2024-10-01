@@ -35,6 +35,11 @@ namespace TechnoBuyWeb.Areas.Admin.Controllers
 
         public IActionResult Create()
         {
+            var claimsIdentity = (ClaimsIdentity?)User.Identity;
+            var userId = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            ViewBag.CartQty = _cartService.GetCartQuantity(userId);
+
             return View();
         }
 
@@ -64,6 +69,11 @@ namespace TechnoBuyWeb.Areas.Admin.Controllers
             {
                 return NotFound();
             }
+
+            var claimsIdentity = (ClaimsIdentity?)User.Identity;
+            var userId = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            ViewBag.CartQty = _cartService.GetCartQuantity(userId);
 
             return View(categoryFromDb);
         }
@@ -95,6 +105,11 @@ namespace TechnoBuyWeb.Areas.Admin.Controllers
             {
                 return NotFound();
             }
+
+            var claimsIdentity = (ClaimsIdentity?)User.Identity;
+            var userId = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            ViewBag.CartQty = _cartService.GetCartQuantity(userId);
 
             return View(categoryFromDb);
         }

@@ -1,0 +1,28 @@
+﻿@model Order
+
+@if(Model == null)
+{
+    <h1 class="text-center">You made no orders</h1>
+}
+else
+{
+    <h1 class="text-center">Your Order Items</h1>
+    <h3>Order Status: @Model.Status</h3>
+    <h3>Location: 
+        @(Model.User.Country == null ? "No country" : Model.User.Country),
+        @(Model.User.City == null ? "No city" : Model.User.City),
+        @(Model.User.StreetAddress == null ? "No street address" : Model.User.StreetAddress)
+    </h3>
+    <h1>Total Amount: @Model.TotalAmount $</h1>
+
+    <div class="d-flex gap-3">
+        @foreach (var item in Model.OrderItems)
+        {
+            <div class="border shadow p-3 rounded-3">
+                <img src="@item.Product.ImageUrl" />
+                <p>@item.Product.Name <span class="fw-bold">@item.Quantity</span><span class="fw-bold">x</span></p>
+                <p>@item.Product.Price $</p>
+            </div>
+        }
+    </div>
+}

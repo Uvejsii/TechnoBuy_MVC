@@ -1,0 +1,9 @@
+﻿@model List<Order>
+
+@foreach(var item in Model)
+{
+    <h2>User: @item.User.Email, Total: @item.TotalAmount $, Status: @item.Status</h2>
+    <p>Order Items:
+        @string.Join(", ", item.OrderItems.Select(oi => $"{oi.Product.Name} {oi.Quantity}x"))
+    </p>
+}

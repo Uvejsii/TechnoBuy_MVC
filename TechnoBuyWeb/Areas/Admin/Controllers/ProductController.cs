@@ -50,6 +50,11 @@ namespace TechnoBuyWeb.Areas.Admin.Controllers
                 Product = new Product()
             };
 
+            var claimsIdentity = (ClaimsIdentity?)User.Identity;
+            var userId = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            ViewBag.CartQty = _cartService.GetCartQuantity(userId);
+
             if (id == null || id == 0)
             {
                 // Create
@@ -138,6 +143,11 @@ namespace TechnoBuyWeb.Areas.Admin.Controllers
             {
                 return NotFound();
             }
+
+            var claimsIdentity = (ClaimsIdentity?)User.Identity;
+            var userId = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            ViewBag.CartQty = _cartService.GetCartQuantity(userId);
 
             return View(productVM);
         }

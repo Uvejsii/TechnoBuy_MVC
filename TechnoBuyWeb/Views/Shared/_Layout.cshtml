@@ -11,7 +11,7 @@
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3 fixed-top">
             <div class="container-fluid">
                 <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">TechnoBuyWeb</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
@@ -26,6 +26,11 @@
                                 <partial name="_CartIconPartial" model="ViewBag.CartQty" />
                             </a>
                         </li>
+                        <li class="nav-item align-self-center ms-2">
+                            <a class="nav-link text-dark" asp-area="Customer" asp-controller="Cart" asp-action="OrderItems">
+                               Last Order
+                            </a>
+                        </li>
                         @if(User.IsInRole(SD.Role_Admin))
                         {
                             <li class="nav-item dropdown border rounded rounded-5 align-self-center ms-2">
@@ -33,6 +38,10 @@
                                     Content Managment
                                 </a>
                                 <ul class="dropdown-menu shadow">
+                                    <li class="nav-item">
+                                        <a class="nav-link text-dark" asp-area="Admin" asp-controller="Order" asp-action="Index">Orders</a>
+                                    </li>
+                                    <hr class="dropdown-divider" />
                                     <li class="nav-item">
                                         <a class="nav-link text-dark" asp-area="Admin" asp-controller="Category" asp-action="Index">Category</a>
                                     </li>
@@ -49,8 +58,8 @@
             </div>
         </nav>
     </header>
-    <div class="container">
-        <main role="main" class="pb-3">
+    <div class="container mt-5">
+        <main role="main" class="pb-3 pt-4">
             @RenderBody()
         </main>
     </div>
