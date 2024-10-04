@@ -1,9 +1,52 @@
 ﻿@model List<Order>
 
-@foreach(var item in Model)
-{
-    <h2>User: @item.User.Email, Total: @item.TotalAmount $, Status: @item.Status</h2>
-    <p>Order Items:
-        @string.Join(", ", item.OrderItems.Select(oi => $"{oi.Product.Name} {oi.Quantity}x"))
-    </p>
-}
+<div class="container">
+    <div class="row pt-4 pb-3">
+        <div class="col-6">
+            <h2 class="text-primary">Order List</h2>
+        </div>
+        <div class="col-6 text-end">
+        </div>
+    </div>
+    @if (Model == null || !Model.Any())
+    {
+        <h4 class="test-center">No placed orders.</h4>
+    }
+    else
+    {
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>User Email</th>
+                    <th>Order Total</th>
+                    <th>Status</th>
+                    <th>Order Items</th>
+                    <th>Order Date</th>
+                    <th>City</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var order in Model)
+                {
+                    <tr>
+                        <td>@order.User.Email</td>
+                        <td>@order.TotalAmount.ToString("N2") $</td>
+                        <td>@order.Status</td>
+                        <td>@string.Join(", ", order.OrderItems.Select(x => $"{x.Product.Name} {x.Quantity}x"))</td>
+                        <td class="text-center">@order.OrderDate</td>
+                        <td>@order.User.City</td>
+                        <td>
+                            <div class="w-100 d-flex gap-2 align-items-center btn-group" role="group">
+                                <a asp-controller="Order" asp-action="Edit" asp-route-id="@order.Id" class="btn btn-warning d-flex flex-column w-50 fw-bold">
+                                    <i class="bi bi-pencil-square"></i> Edit Status
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+    }
+</div>

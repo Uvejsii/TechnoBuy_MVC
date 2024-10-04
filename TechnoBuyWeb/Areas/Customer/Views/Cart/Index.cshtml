@@ -1,54 +1,71 @@
 ﻿@model List<CartItem>
 
-<div class="container">
-    <div class="d-flex justify-content-between">
-        <h3>Your Added Items:</h3>
+<div class="container mt-5">
+    <div class="row mb-4">
+        <div class="col-12 text-center">
+            <h2 class="fw-bold">Your Shopping Cart</h2>
+        </div>
     </div>
-    <div class="d-flex justify-content-between">
-        <div class="d-flex flex-wrap w-50">
+    <div class="row">
+        <div class="col-md-8">
             @if (Model == null || !Model.Any())
             {
-                <h1 class="text-center w-100">No Added Items</h1>
+                <div class="alert alert-info text-center">
+                    <h4>No Items in Your Cart</h4>
+                    <a asp-controller="Home" asp-action="Index" class="btn btn-primary mt-3 fw-bold">Continue Shopping</a>
+                </div>
             }
             else
             {
                 @foreach (var item in Model)
                 {
-                    <div class="border w-50 rounded-3 p-3 shadow">
-                        <h4>Name: @item.Product.Name, Qty: @(item.Quantity)x, Price: @item.Product.Price.ToString("N2") $</h4>
-                        <img src="@item.Product.ImageUrl" class="w-50" />
-                        <div class="d-flex justify-content-between">
-                            <a asp-controller="Cart"
-                               asp-action="Remove"
-                               asp-route-id="@item.Id"
-                               class="btn btn-danger fw-bold w-50">
-                                Remove <i class="bi bi-trash"></i>
-                            </a>
-                            <div>
-                                @if (item.Quantity == 1)
-                                {
-                                    <a class="btn btn-warning fw-bold">
-                                        -
-                                    </a>
-                                }
-                                else
-                                {
+                    <div class="card mb-3 shadow-sm">
+                        <div class="row g-0">
+                            <div class="col-md-4">
+                                <img src="@item.Product.ImageUrl" class="img-fluid rounded-start" alt="@item.Product.Name">
+                            </div>
+                            <div class="col-md-8">
+                                <div class="card-body">
+                                    <h5 class="card-title">@item.Product.Name</h5>
+                                    <p class="card-text text-muted">Price: @item.Product.Price.ToString("N2") $</p>
+                                    <p class="card-text">
+                                        <strong>Qty:</strong>
+                                        <div class="btn-group">
+                                            @if (item.Quantity > 1)
+                                            {
+                                                <a asp-controller="Cart"
+                                                   asp-action="UpdateQty"
+                                                   asp-route-id="@item.Id"
+                                                   asp-route-change="-1"
+                                                   class="btn btn-outline-warning">
+                                                    <i class="bi bi-dash"></i>
+                                                </a>
+                                            }
+                                            else
+                                            {
+                                                <button class="btn btn-outline-warning" disabled>
+                                                    <i class="bi bi-dash"></i>
+                                                </button>
+                                            }
+
+                                            <span class="btn btn-outline-secondary">@item.Quantity</span>
+
+                                            <a asp-controller="Cart"
+                                               asp-action="UpdateQty"
+                                               asp-route-id="@item.Id"
+                                               asp-route-change="+1"
+                                               class="btn btn-outline-success">
+                                                <i class="bi bi-plus"></i>
+                                            </a>
+                                        </div>
+                                    </p>
                                     <a asp-controller="Cart"
-                                       asp-action="UpdateQty"
+                                       asp-action="Remove"
                                        asp-route-id="@item.Id"
-                                       asp-route-change="-1"
-                                       class="btn btn-warning fw-bold">
-                                        -
+                                       class="btn btn-danger mt-2">
+                                        Remove <i class="bi bi-trash"></i>
                                     </a>
-                                }
-                                <span class="fw-bold">@item.Quantity</span>
-                                <a asp-controller="Cart"
-                                   asp-action="UpdateQty"
-                                   asp-route-id="@item.Id"
-                                   asp-route-change="+1"
-                                   class="btn btn-success fw-bold">
-                                    +
-                                </a>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -57,19 +74,22 @@
         </div>
         @if (Model != null && Model.Any())
         {
-            <div class="border">
-                <h5>Items in cart: @ViewBag.CartQty</h5>
-                <h3>Total Amount: @ViewBag.TotalAmount.ToString("N2") $</h3>
-                <hr />
-                <form asp-controller="Cart" asp-action="MakeOrder" method="post">
-                    @foreach (var item in Model)
-                    {
-                        <input type="hidden" name="orderItems[@Model.IndexOf(item)].ProductId" value="@item.ProductId" />
-                        <input type="hidden" name="orderItems[@Model.IndexOf(item)].Quantity" value="@item.Quantity" />
-                    }
-                    <button type="submit" class="btn btn-primary w-100 fw-bold">Place Order</button>
-                </form>
-                <h5>Shipping to @Model.First().Cart.User.City will take 2 weeks</h5>
+            <div class="col-md-4">
+                <div class="card shadow-sm p-3">
+                    <h4 class="fw-bold mb-3">Order Summary</h4>
+                    <p>Items in Cart: <strong>@ViewBag.CartQty</strong></p>
+                    <h5>Total: <strong>@ViewBag.TotalAmount.ToString("N2") $</strong></h5>
+                    <hr />
+                    <form asp-controller="Cart" asp-action="MakeOrder" method="post">
+                        @foreach (var item in Model)
+                        {
+                            <input type="hidden" name="orderItems[@Model.IndexOf(item)].ProductId" value="@item.ProductId" />
+                            <input type="hidden" name="orderItems[@Model.IndexOf(item)].Quantity" value="@item.Quantity" />
+                        }
+                        <button type="submit" class="btn btn-primary w-100 fw-bold">Place Order</button>
+                    </form>
+                    <p class="mt-4">Shipping to <strong>@Model.First().Cart.User.City</strong> will take 2 weeks.</p>
+                </div>
             </div>
         }
     </div>

@@ -1,28 +1,81 @@
 ﻿@model Order
 
-@if(Model == null)
-{
-    <h1 class="text-center">You made no orders</h1>
-}
-else
-{
-    <h1 class="text-center">Your Order Items</h1>
-    <h3>Order Status: @Model.Status</h3>
-    <h3>Location: 
-        @(Model.User.Country == null ? "No country" : Model.User.Country),
-        @(Model.User.City == null ? "No city" : Model.User.City),
-        @(Model.User.StreetAddress == null ? "No street address" : Model.User.StreetAddress)
-    </h3>
-    <h1>Total Amount: @Model.TotalAmount $</h1>
-
-    <div class="d-flex gap-3">
-        @foreach (var item in Model.OrderItems)
-        {
-            <div class="border shadow p-3 rounded-3">
-                <img src="@item.Product.ImageUrl" />
-                <p>@item.Product.Name <span class="fw-bold">@item.Quantity</span><span class="fw-bold">x</span></p>
-                <p>@item.Product.Price $</p>
+<div class="container mt-5">
+    @if (Model == null)
+    {
+        <div class="text-center">
+            <h2 class="fw-bold">You have made no orders</h2>
+            <a asp-controller="Product" asp-action="Index" class="btn btn-primary mt-4">Browse Products</a>
+        </div>
+    }
+    else
+    {
+        <div class="row mb-4">
+            <div class="col-12 text-center">
+                <h2 class="fw-bold">Order Details</h2>
+                <p class="text-muted">Order placed on: @Model.OrderDate.ToString("dd/MM/yyyy HH:mm tt")</p>
             </div>
-        }
-    </div>
+        </div>
+        <div class="row">
+            <div class="col-md-8">
+                <div class="card shadow-sm p-4 mb-4">
+                    <h4 class="fw-bold mb-3">Shipping Information</h4>
+                    <p><strong>Status:</strong> <span class="@GetStatusBadgeClass(Model.Status.ToString())">@Model.Status</span></p>
+                    <ul class="list-unstyled">
+                        <li><strong>Country:</strong> @(Model.User.Country ?? "No country")</li>
+                        <li><strong>City:</strong> @(Model.User.City ?? "No city")</li>
+                        <li><strong>Street Address:</strong> @(Model.User.StreetAddress ?? "No street address")</li>
+                    </ul>
+                    <p><strong>Total Amount:</strong> <span class="fw-bold text-primary">@Model.TotalAmount.ToString("N2") $</span></p>
+                </div>
+                <div class="card shadow-sm p-4">
+                    <h4 class="fw-bold mb-3">Items in Your Order</h4>
+                    <div class="row">
+                        @foreach (var item in Model.OrderItems)
+                        {
+                            <div class="col-md-6 col-lg-4 mb-3">
+                                <div class="card shadow-sm border-0">
+                                    <img src="@item.Product.ImageUrl" class="card-img-top img-fluid" alt="@item.Product.Name" />
+                                    <div class="card-body">
+                                        <h5 class="card-title">@item.Product.Name</h5>
+                                        <p class="card-text">
+                                            <strong>Quantity:</strong> @item.Quantity x <br />
+                                            <strong>Price:</strong> @item.Product.Price.ToString("N2") $
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card shadow-sm p-4">
+                    <h4 class="fw-bold mb-3">Order Summary</h4>
+                    <p><strong>Items:</strong> @Model.OrderItems.Count</p>
+                    <p><strong>Total Amount:</strong> <span class="fw-bold">@Model.TotalAmount.ToString("N2") $</span></p>
+                    <hr />
+                    <p><strong>Order Status:</strong> <span class="@GetStatusBadgeClass(Model.Status.ToString())">@Model.Status</span></p>
+                    <p class="text-muted">Estimated delivery in 7-14 days.</p>
+                    <a asp-controller="Order" asp-action="TrackOrder" asp-route-id="@Model.Id" class="btn btn-primary w-100 mt-3">Track Your Order</a>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@functions {
+    private string GetStatusBadgeClass(string status)
+    {
+        return status switch
+        {
+            "Pending" => "badge badge-warning text-dark", // Yellow background with dark text
+            "Boxing" => "text-bg-warning",  // Same as pending, could be customized further
+            "Shipping" => "badge badge-info text-white",   // Light blue background with white text
+            "Delivered" => "badge badge-success text-white", // Green background with white text
+            "Cancelled" => "badge badge-danger text-white", // Red background with white text
+            "Returned" => "badge badge-secondary text-white", // Gray or purple with white text
+            _ => "badge badge-secondary text-dark" // Default fallback
+        };
+    }
 }
