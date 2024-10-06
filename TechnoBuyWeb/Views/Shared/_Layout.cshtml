@@ -11,53 +11,54 @@
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3 fixed-top">
+        <nav class="navbar navbar-expand-lg navbar-light bg-light bg-gradient fixed-top shadow-sm px-3">
             <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">TechnoBuyWeb</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
+                <a class="navbar-brand fw-bold text-uppercase text-primary" asp-area="" asp-controller="Home" asp-action="Index">
+                    <i class="bi bi-shop-window me-2"></i>TechnoBuy
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="Customer" asp-controller="Cart" asp-action="Index">
-                                <i class="bi bi-cart fs-4"></i>
-                                <partial name="_CartIconPartial" model="ViewBag.CartQty" />
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item me-3">
+                            <a class="nav-link position-relative text-dark" asp-area="Customer" asp-controller="Cart" asp-action="Index">
+                                <i class="bi bi-cart3 fs-4"></i>
+                                @* <partial name="_CartIconPartial" model="ViewBag.CartQty" /> *@
+                                <span class="position-absolute top-25 start-100 translate-middle badge rounded-pill bg-danger mt-2">
+                                    @ViewBag.CartQty
+                                </span>
                             </a>
                         </li>
-                        <li class="nav-item align-self-center ms-2">
-                            <a class="nav-link text-dark" asp-area="Customer" asp-controller="Cart" asp-action="OrderItems">
-                               Last Order
+                        <li class="nav-item me-3 align-self-center">
+                            <a class="nav-link text-dark fw-semibold" asp-area="Customer" asp-controller="Cart" asp-action="OrderItems">
+                                <i class="bi bi-clock-history me-1"></i> Last Order
                             </a>
                         </li>
-                        @if(User.IsInRole(SD.Role_Admin))
+                        @if (User.IsInRole(SD.Role_Admin))
                         {
-                            <li class="nav-item dropdown border rounded rounded-5 align-self-center ms-2">
-                                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    Content Managment
+                            <li class="nav-item dropdown align-self-center">
+                                <a class="nav-link dropdown-toggle text-dark fw-semibold" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="bi bi-tools me-1"></i> Content Management
                                 </a>
-                                <ul class="dropdown-menu shadow">
-                                    <li class="nav-item">
-                                        <a class="nav-link text-dark" asp-area="Admin" asp-controller="Order" asp-action="Index">Orders</a>
-                                    </li>
-                                    <hr class="dropdown-divider" />
-                                    <li class="nav-item">
-                                        <a class="nav-link text-dark" asp-area="Admin" asp-controller="Category" asp-action="Index">Category</a>
-                                    </li>
-                                    <hr class="dropdown-divider" />
-                                    <li class="nav-item">
-                                        <a class="nav-link text-dark" asp-area="Admin" asp-controller="Product" asp-action="Index">Product</a>
-                                    </li>
+                                <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="adminDropdown">
+                                    <li><a class="dropdown-item" asp-area="Admin" asp-controller="Order" asp-action="Index">Orders</a></li>
+                                    <li><hr class="dropdown-divider" /></li>
+                                    <li><a class="dropdown-item" asp-area="Admin" asp-controller="Category" asp-action="Index">Categories</a></li>
+                                    <li><hr class="dropdown-divider" /></li>
+                                    <li><a class="dropdown-item" asp-area="Admin" asp-controller="Product" asp-action="Index">Products</a></li>
                                 </ul>
                             </li>
                         }
+                        <li class="nav-item align-self-center">
+                            <partial name="_LoginPartial" />
+                        </li>
                     </ul>
-                    <partial name="_LoginPartial" />
                 </div>
             </div>
         </nav>
     </header>
+
     <div class="container mt-5">
         <main role="main" class="pb-3 pt-4">
             @RenderBody()

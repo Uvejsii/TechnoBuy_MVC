@@ -1,84 +1,54 @@
 ﻿@model Product
 
 <form method="post">
-    <div class="card shadow border-0 my-4">
-        <div class="card-header bg-secondary bg-gradient text-light py-4">
-            <div class="row">
-                <div class="col-12 text-center">
-                    <h3 class="text-white text-uppercase">@Model.Name</h3>
-                    <p class="text-white-50 fw-semibold mb-0">by @Model.Brand</p>
-                </div>
-            </div>
+    <div class="card shadow-lg border-0 my-5 rounded-3 overflow-hidden">
+        <div class="card-header bg-primary bg-gradient text-light py-2 text-center">
+            <h2 class="text-white text-uppercase fw-bold">@Model.Name</h2>
+            <p class="text-white-50 fs-5 m-0">by @Model.Brand</p>
         </div>
-        <div class="card-body">
-            <div class="py-3">
-                <div class="row">
-                    <div class="col-6 col-md-2 offset-lg-1 pb-1">
-                        <a asp-action="Index" class="btn btn-outline-primary bg-gradient mb-5 fw-semibold btn-sm text-uppercase">
-                            <small>Back to home</small>
+        <div class="card-body p-5">
+            <div class="row">
+                <div class="col-12 text-start mb-4">
+                    <a asp-action="Index" class="btn btn-outline-secondary text-uppercase fw-bold px-4 py-2">
+                        <i class="bi bi-arrow-left me-2"></i> Back to Home
+                    </a>
+                </div>
+                <div class="col-lg-4 text-center mb-4">
+                    <img src="@Model.ImageUrl" class="img-fluid rounded shadow-sm" alt="@Model.Name" style="max-height: 400px; object-fit: cover;" />
+                </div>
+                <div class="col-lg-7 offset-lg-1">
+                    <span class="badge bg-info text-dark px-3 py-2 mb-3">Category: @Model.Category.Name</span>
+                    <div class="mb-4">
+                        <h4 class="fw-bold text-dark">Price:</h4>
+                        <span class="fs-3 text-success fw-bold">@Model.Price.ToString("N2") $</span>
+                    </div>
+                    <div class="mb-4">
+                        <div class="row align-items-center">
+                            <label class="col-4 col-lg-2 fw-semibold text-dark">Quantity:</label>
+                            <div class="col-4 col-lg-2">
+                                <input type="number" class="form-control text-center" value="1" min="1" max="10" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <div class="row align-items-center">
+                            <label class="col-4 col-lg-2 fw-semibold text-dark">Total:</label>
+                            <div class="col-5 col-lg-3">
+                                <span class="fs-4 text-warning fw-bold">@Model.Price.ToString("N2") $</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <p class="text-secondary">@Html.Raw(Model.Description)</p>
+                    </div>
+                    <div class="w-50">
+                        <a asp-controller="Cart"
+                           asp-action="AddToCart"
+                           asp-route-id="@Model.Id"
+                           class="btn btn-success btn-lg text-uppercase fw-bold py-3">
+                            <i class="bi bi-cart-fill me-2"></i> Add to Cart
                         </a>
                     </div>
-                </div>
-                <div class="row">
-                    <div class="col-12 col-lg-3 offset-lg-1 text-center mb-3">
-                        <img src="@Model.ImageUrl" width="100%" class="rounded" />
-                    </div>
-                    <div class="col-12 col-lg-6 offset-lg-1">
-
-                        <div class="col-12 col-md-6 pb-4">
-                            <span class="badge text-black">Category: @Model.Category.Name</span>
-                        </div>
-                        <div class="row ps-2">
-                            <h6 class="text-dark text-opacity-50  pb-2">
-                                Price:
-                                <span class="fw-bold">
-                                    @Model.Price.ToString("N2")
-                                </span>
-                            </h6>
-                        </div>
-                        <div class="row text-center ps-2">
-                            <div class="p-1 col-3 col-lg-2 bg-white border-bottom">
-                                <div class="text-dark text-opacity-50 fw-semibold">Quantity:</div>
-                            </div>
-                            <div class="p-1 col-3 col-lg-2 bg-white border-bottom">
-                                <div class="text-dark text-opacity-50 fw-semibold">1</div>
-                            </div>
-                        </div>
-                        <div class="row text-center ps-2">
-                            <div class="p-1 col-3 col-lg-2 bg-white text-warning fw-bold">
-                                <div>Price:</div>
-                            </div>
-                            <div class="p-1 col-3 col-lg-2 bg-white text-warning fw-bold">
-                                <div>@Model.Price.ToString("N2")</div>
-                            </div>
-                        </div>
-                        <div class="row pl-2 my-3">
-                            <p class="text-secondary lh-sm">@Html.Raw(Model.Description)</p>
-                        </div>
-                        <div class="row pl-2 mb-3">
-                            <div class="col-md-4">
-                                <div class="input-group mb-3">
-                                    <span class="input-group-text bg-primary text-white border-0 fw-semibold"
-                                          id="inputGroup-sizing-default">
-                                        Count
-                                    </span>
-                                    <input type="number" value="1" class="form-control text-end"
-                                           aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" />
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-12 col-md-6 pb-1">
-                                <a asp-controller="Cart"
-                                   asp-action="AddToCart"
-                                   asp-route-id="@Model.Id"
-                                    class="btn btn-success bg-gradient w-100 py-2 text-uppercase fw-bold">
-                                    Add to Cart
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-
                 </div>
             </div>
         </div>
