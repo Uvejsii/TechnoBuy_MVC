@@ -24,8 +24,7 @@
                         <li class="nav-item me-3">
                             <a class="nav-link position-relative text-dark" asp-area="Customer" asp-controller="Cart" asp-action="Index">
                                 <i class="bi bi-cart3 fs-4"></i>
-                                @* <partial name="_CartIconPartial" model="ViewBag.CartQty" /> *@
-                                <span class="position-absolute top-25 start-100 translate-middle badge rounded-pill bg-danger mt-2">
+                                <span class="position-absolute top-25 start-100 translate-middle badge rounded-pill bg-primary mt-2">
                                     @ViewBag.CartQty
                                 </span>
                             </a>
@@ -37,7 +36,7 @@
                         </li>
                         @if (User.IsInRole(SD.Role_Admin))
                         {
-                            <li class="nav-item dropdown align-self-center">
+                            <li class="nav-item dropdown align-self-center border rounded-2 shadow-sm">
                                 <a class="nav-link dropdown-toggle text-dark fw-semibold" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                     <i class="bi bi-tools me-1"></i> Content Management
                                 </a>

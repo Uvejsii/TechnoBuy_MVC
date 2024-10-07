@@ -5,11 +5,14 @@
 using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.Security.Claims;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using TechnoBuy.DataAccess.Service;
+using TechnoBuy.DataAccess.Service.IService;
 using TechnoBuy.Models;
 
 namespace TechnoBuyWeb.Areas.Identity.Pages.Account.Manage
@@ -18,13 +21,16 @@ namespace TechnoBuyWeb.Areas.Identity.Pages.Account.Manage
     {
         private readonly UserManager<IdentityUser> _userManager;
         private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly ICartService _cartService;
 
         public IndexModel(
             UserManager<IdentityUser> userManager,
-            SignInManager<IdentityUser> signInManager)
+            SignInManager<IdentityUser> signInManager,
+            ICartService cartService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _cartService = cartService;
         }
 
         /// <summary>
@@ -76,6 +82,11 @@ namespace TechnoBuyWeb.Areas.Identity.Pages.Account.Manage
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
 
             Username = userName;
+
+            var claimsIdentity = (ClaimsIdentity?)User.Identity;
+            var userId = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            ViewData["CartQty"] = _cartService.GetCartQuantity(userId);
 
             Input = new InputModel
             {

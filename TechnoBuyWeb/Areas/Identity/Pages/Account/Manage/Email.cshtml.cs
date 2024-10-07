@@ -4,6 +4,7 @@
 
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.Security.Claims;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
@@ -12,6 +13,7 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
+using TechnoBuy.DataAccess.Service.IService;
 
 namespace TechnoBuyWeb.Areas.Identity.Pages.Account.Manage
 {
@@ -20,15 +22,18 @@ namespace TechnoBuyWeb.Areas.Identity.Pages.Account.Manage
         private readonly UserManager<IdentityUser> _userManager;
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly IEmailSender _emailSender;
+        private readonly ICartService _cartService;
 
         public EmailModel(
             UserManager<IdentityUser> userManager,
             SignInManager<IdentityUser> signInManager,
-            IEmailSender emailSender)
+            IEmailSender emailSender,
+            ICartService cartService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _emailSender = emailSender;
+            _cartService = cartService;
         }
 
         /// <summary>
@@ -77,6 +82,11 @@ namespace TechnoBuyWeb.Areas.Identity.Pages.Account.Manage
         {
             var email = await _userManager.GetEmailAsync(user);
             Email = email;
+
+            var claimsIdentity = (ClaimsIdentity?)User.Identity;
+            var userId = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            ViewData["CartQty"] = _cartService.GetCartQuantity(userId);
 
             Input = new InputModel
             {

@@ -4,11 +4,13 @@
 
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
+using TechnoBuy.DataAccess.Service.IService;
 
 namespace TechnoBuyWeb.Areas.Identity.Pages.Account.Manage
 {
@@ -17,15 +19,18 @@ namespace TechnoBuyWeb.Areas.Identity.Pages.Account.Manage
         private readonly UserManager<IdentityUser> _userManager;
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly ILogger<ChangePasswordModel> _logger;
+        private readonly ICartService _cartService;
 
         public ChangePasswordModel(
             UserManager<IdentityUser> userManager,
             SignInManager<IdentityUser> signInManager,
-            ILogger<ChangePasswordModel> logger)
+            ILogger<ChangePasswordModel> logger,
+            ICartService cartService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _logger = logger;
+            _cartService = cartService;
         }
 
         /// <summary>
@@ -84,6 +89,11 @@ namespace TechnoBuyWeb.Areas.Identity.Pages.Account.Manage
             {
                 return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
             }
+
+            var claimsIdentity = (ClaimsIdentity?)User.Identity;
+            var userId = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            ViewData["CartQty"] = _cartService.GetCartQuantity(userId);
 
             var hasPassword = await _userManager.HasPasswordAsync(user);
             if (!hasPassword)
