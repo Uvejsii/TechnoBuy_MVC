@@ -1,22 +1,25 @@
 ﻿@model List<CartItem>
 
-<div class="container mt-5">
+<div class="container mt-2">
     <div class="row mb-4">
-        <div class="col-12 text-center">
+        <div class="col-12 text-center mb-3">
             <h2 class="fw-bold">Your Shopping Cart</h2>
         </div>
     </div>
     <div class="row">
-        <div class="col-md-8">
             @if (Model == null || !Model.Any())
             {
-                <div class="alert alert-info text-center">
-                    <h4>No Items in Your Cart</h4>
-                    <a asp-controller="Home" asp-action="Index" class="btn btn-primary mt-3 fw-bold">Continue Shopping</a>
+                <div class="col-12">
+                    <div class="alert alert-info text-center">
+                        <h4>No Items in Your Cart</h4>
+                        <a asp-controller="Home" asp-action="Index" class="btn btn-primary mt-3 fw-bold">Continue Shopping</a>
+                    </div>
                 </div>
             }
             else
             {
+            <div class="col-md-8 position-relative">
+                <a asp-controller="Cart" asp-action="RemoveAll" class="w-auto position-absolute bottom-100 end-0 me-2 pe-1">Remove All</a>
                 @foreach (var item in Model)
                 {
                     <div class="card mb-3 shadow-sm">
@@ -30,48 +33,52 @@
                                     <p class="card-text text-muted">Price: @item.Product.Price.ToString("N2") $</p>
                                     <p class="card-text">
                                         <strong>Qty:</strong>
-                                        <div class="btn-group">
-                                            @if (item.Quantity > 1)
-                                            {
+                                        <div class="d-flex align-items-center justify-content-between">
+                                            <div class="btn-group">
+                                                @if (item.Quantity > 1)
+                                                {
+                                                    <a asp-controller="Cart"
+                                                       asp-action="UpdateQty"
+                                                       asp-route-id="@item.Id"
+                                                       asp-route-change="-1"
+                                                       class="btn btn-outline-warning">
+                                                        <i class="bi bi-dash"></i>
+                                                    </a>
+                                                }
+                                                else
+                                                {
+                                                    <button class="btn btn-outline-warning" disabled>
+                                                        <i class="bi bi-dash"></i>
+                                                    </button>
+                                                }
+
+                                                <span class="btn btn-outline-secondary">@item.Quantity</span>
+
                                                 <a asp-controller="Cart"
                                                    asp-action="UpdateQty"
                                                    asp-route-id="@item.Id"
-                                                   asp-route-change="-1"
-                                                   class="btn btn-outline-warning">
-                                                    <i class="bi bi-dash"></i>
+                                                   asp-route-change="+1"
+                                                   class="btn btn-outline-success">
+                                                    <i class="bi bi-plus"></i>
                                                 </a>
-                                            }
-                                            else
-                                            {
-                                                <button class="btn btn-outline-warning" disabled>
-                                                    <i class="bi bi-dash"></i>
-                                                </button>
-                                            }
-
-                                            <span class="btn btn-outline-secondary">@item.Quantity</span>
-
-                                            <a asp-controller="Cart"
-                                               asp-action="UpdateQty"
-                                               asp-route-id="@item.Id"
-                                               asp-route-change="+1"
-                                               class="btn btn-outline-success">
-                                                <i class="bi bi-plus"></i>
-                                            </a>
+                                            </div>
+                                            <div>
+                                                <a asp-controller="Cart"
+                                                   asp-action="Remove"
+                                                   asp-route-id="@item.Id"
+                                                   class="btn btn-danger fw-bold">
+                                                    Remove <i class="bi bi-trash"></i>
+                                                </a>
+                                            </div>
                                         </div>
                                     </p>
-                                    <a asp-controller="Cart"
-                                       asp-action="Remove"
-                                       asp-route-id="@item.Id"
-                                       class="btn btn-danger mt-2">
-                                        Remove <i class="bi bi-trash"></i>
-                                    </a>
                                 </div>
                             </div>
                         </div>
                     </div>
                 }
+                </div>
             }
-        </div>
         @if (Model != null && Model.Any())
         {
             <div class="col-md-4">

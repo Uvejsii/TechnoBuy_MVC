@@ -217,5 +217,21 @@ namespace TechnoBuyWeb.Areas.Customer.Controllers
 
             return View(lastOrder);
         }
+
+        public IActionResult RemoveAll()
+        {
+            var claimsIdentity = (ClaimsIdentity?)User.Identity;
+            var userId = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            var cartItems = _unitOfWork.CartItem.GetAll(ci => ci.Cart.UserId == userId);
+
+            if (cartItems != null && cartItems.Any())
+            {
+                _unitOfWork.CartItem.RemoveRange(cartItems);
+                _unitOfWork.Save();
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
     }
 }

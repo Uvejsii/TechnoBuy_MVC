@@ -20,7 +20,7 @@
             <div class="col-md-8">
                 <div class="card shadow-sm p-4 mb-4">
                     <h4 class="fw-bold mb-3">Shipping Information</h4>
-                    <p><strong>Status:</strong> <span class="@GetStatusBadgeClass(Model.Status.ToString())">@Model.Status</span></p>
+                    <p><strong>Status:</strong> <span class="badge rounded-pill @GetStatusBadgeClass(Model.Status.ToString())">@Model.Status</span></p>
                     <ul class="list-unstyled">
                         <li><strong>Country:</strong> @(Model.User.Country ?? "No country")</li>
                         <li><strong>City:</strong> @(Model.User.City ?? "No city")</li>
@@ -55,7 +55,7 @@
                     <p><strong>Items:</strong> @Model.OrderItems.Count</p>
                     <p><strong>Total Amount:</strong> <span class="fw-bold">@Model.TotalAmount.ToString("N2") $</span></p>
                     <hr />
-                    <p><strong>Order Status:</strong> <span class="@GetStatusBadgeClass(Model.Status.ToString())">@Model.Status</span></p>
+                    <p><strong>Order Status:</strong> <span class="badge rounded-pill @GetStatusBadgeClass(Model.Status.ToString())">@Model.Status</span></p>
                     <p class="text-muted">Estimated delivery in 7-14 days.</p>
                     <a asp-controller="Order" asp-action="TrackOrder" asp-route-id="@Model.Id" class="btn btn-primary w-100 mt-3">Track Your Order</a>
                 </div>
@@ -69,13 +69,13 @@
     {
         return status switch
         {
-            "Pending" => "badge badge-warning text-dark", // Yellow background with dark text
-            "Boxing" => "text-bg-warning",  // Same as pending, could be customized further
-            "Shipping" => "badge badge-info text-white",   // Light blue background with white text
-            "Delivered" => "badge badge-success text-white", // Green background with white text
-            "Cancelled" => "badge badge-danger text-white", // Red background with white text
-            "Returned" => "badge badge-secondary text-white", // Gray or purple with white text
-            _ => "badge badge-secondary text-dark" // Default fallback
+            "Pending" => "bg-warning text-dark",
+            "Boxing" => "bg-info",
+            "Shipping" => "bg-primary",
+            "Delivered" => "bg-success",
+            "Cancelled" => "bg-danger",
+            "Returned" => "bg-secondary",
+            _ => "bg-secondary"
         };
     }
 }
