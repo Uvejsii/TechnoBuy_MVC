@@ -41,13 +41,18 @@ namespace TechnoBuy.DataAccess.Repository
             return query.FirstOrDefault();
         }
 
-        public IEnumerable<T> GetAll(Expression<Func<T, bool>>? filter = null, string? includeProperties = null)
+        public IEnumerable<T> GetAll(Expression<Func<T, bool>>? filter = null, string? includeProperties = null, string? searchQuery = null)
         {
-            IQueryable<T> query = dbSet;
+            IQueryable<T> query = dbSet.AsQueryable();
 
             if (filter != null)
             {
                 query = query.Where(filter);
+            }
+
+            if (!string.IsNullOrEmpty(searchQuery))
+            {
+                query = query.Where(x => EF.Property<string>(x, "Name").Contains(searchQuery));
             }
 
             if (!string.IsNullOrEmpty(includeProperties))

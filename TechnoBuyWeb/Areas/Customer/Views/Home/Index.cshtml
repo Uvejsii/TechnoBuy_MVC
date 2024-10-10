@@ -1,7 +1,33 @@
 ﻿@model List<Product>
 
 <div class="container py-4">
-    <div class="row">
+    <div class="mb-3 d-flex justify-content-between align-items-center">
+        <div>
+            @if (ViewBag.Categories != null)
+            {
+                <form>
+                    @Html.DropDownList("categoryId",
+                             ViewBag.Categories as SelectList,
+                             "All Categories",
+                             new { @class = "form-control", onchange = "this.form.submit()" })
+                </form>
+            }
+            else
+            {
+                <p>No categories available.</p>
+            }
+
+        </div>
+        <div class="w-25">
+            <form asp-controller="Home" asp-action="Index" method="get" class="d-flex">
+                <input type="text" placeholder="Search a product..." class="form-control" name="searchQuery" />
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-search"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+    <div class="row" id="product-list">
         @foreach (var product in Model)
         {
             <div class="col-lg-3 col-sm-6 mb-4">
@@ -32,3 +58,28 @@
         }
     </div>
 </div>
+
+@section Scripts{
+    <script>
+        $(document).ready(function () {
+            $('#categoryId').change(function () {
+                getProductByCatId();
+            });
+        });
+
+        function getProductByCatId() {
+            var categoryId = $('#categoryId').val();
+            $.ajax({
+                url: '@Url.Action("GetProductByCatId", "Home")',
+                type: "GET",
+                data: { categoryId: categoryId },
+                success: function (data) {
+                    $('#product-list').html(data);
+                },
+                error: function (xhr, status, error) {
+                    console.error(error);
+                }
+            });
+        }
+    </script>
+}

@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Diagnostics;
 using System.Security.Claims;
 using TechnoBuy.DataAccess.Repository.IRepository;
@@ -21,16 +22,29 @@ namespace TechnoBuyWeb.Areas.Customer.Controllers
             _cartService = cartService;
         }
 
-        public IActionResult Index()
+        public IActionResult Index(string searchQuery, int? categoryId)
         {
             var claimsIdentity = (ClaimsIdentity?)User.Identity;
             var userId = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            List<Product> objProductList = _unitOfWork.Product.GetAll().ToList();
+            List<Product> objProductList = _unitOfWork.Product
+                .GetAll(p => (string.IsNullOrEmpty(searchQuery) || p.Name.Contains(searchQuery)) &&
+                              (!categoryId.HasValue || p.CategoryId == categoryId)).ToList();
 
             ViewBag.CartQty = _cartService.GetCartQuantity(userId);
 
+            var categories = _unitOfWork.Category.GetAll().ToList();
+            ViewBag.Categories = new SelectList(categories, "Id", "Name");
+            ViewBag.SelectedCategory = categoryId;
+
             return View(objProductList);
+        }
+
+        public IActionResult GetProductByCatId(int categoryId)
+        {
+            var products = _unitOfWork.Product.GetAll(p => p.CategoryId == categoryId).ToList();
+
+            return View(products);
         }
 
         public IActionResult Privacy()
