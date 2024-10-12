@@ -22,29 +22,44 @@ namespace TechnoBuyWeb.Areas.Customer.Controllers
             _cartService = cartService;
         }
 
-        public IActionResult Index(string searchQuery, int? categoryId)
+        public IActionResult Index(string searchQuery, int? categoryId, int pageNum = 1)
         {
             var claimsIdentity = (ClaimsIdentity?)User.Identity;
             var userId = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
+            int pageSize = 8;
+
             List<Product> objProductList = _unitOfWork.Product
                 .GetAll(p => (string.IsNullOrEmpty(searchQuery) || p.Name.Contains(searchQuery)) &&
-                              (!categoryId.HasValue || p.CategoryId == categoryId)).ToList();
+                              (!categoryId.HasValue || p.CategoryId == categoryId), null, null , pageNum, pageSize).ToList();
 
             ViewBag.CartQty = _cartService.GetCartQuantity(userId);
+            ViewBag.PageNum = pageNum;
 
             var categories = _unitOfWork.Category.GetAll().ToList();
             ViewBag.Categories = new SelectList(categories, "Id", "Name");
             ViewBag.SelectedCategory = categoryId;
+            ViewBag.SearchQuery = searchQuery;
 
             return View(objProductList);
         }
 
-        public IActionResult GetProductByCatId(int categoryId)
+        public IActionResult ChangePagination(string change)
         {
-            var products = _unitOfWork.Product.GetAll(p => p.CategoryId == categoryId).ToList();
+            int pageNum = ViewBag.PageNum ?? 1;
 
-            return View(products);
+            if (change == "+1")
+            {
+                pageNum++;
+            }
+            else if (change == "-1" && pageNum > 1) 
+            {
+                pageNum--;
+            }
+
+            ViewBag.PageNum = pageNum;
+
+            return RedirectToAction("Index", new {pageNum = pageNum});
         }
 
         public IActionResult Privacy()

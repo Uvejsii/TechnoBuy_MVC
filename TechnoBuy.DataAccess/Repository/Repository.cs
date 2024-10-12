@@ -41,7 +41,8 @@ namespace TechnoBuy.DataAccess.Repository
             return query.FirstOrDefault();
         }
 
-        public IEnumerable<T> GetAll(Expression<Func<T, bool>>? filter = null, string? includeProperties = null, string? searchQuery = null)
+        public IEnumerable<T> GetAll(Expression<Func<T, bool>>? filter = null, string? includeProperties = null, 
+            string? searchQuery = null, int pageNumber = 0, int pageSize = 0)
         {
             IQueryable<T> query = dbSet.AsQueryable();
 
@@ -61,6 +62,11 @@ namespace TechnoBuy.DataAccess.Repository
                 {
                     query = query.Include(includeProp);
                 }
+            }
+
+            if (pageNumber > 0 && pageSize > 0)
+            {
+                query = query.Skip((pageNumber - 1) * pageSize).Take(pageSize);
             }
 
             return query.ToList();

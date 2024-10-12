@@ -46,7 +46,7 @@ namespace TechnoBuyWeb.Areas.Customer.Controllers
             return View(cartItems);
         }
 
-        public IActionResult AddToCart(int id)
+        public IActionResult AddToCart(int id, bool isDetailPage)
         {
             var claimsIdentity = (ClaimsIdentity?)User.Identity;
             var userId = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -89,6 +89,11 @@ namespace TechnoBuyWeb.Areas.Customer.Controllers
             }
 
             _unitOfWork.Save();
+
+            if (isDetailPage)
+            {
+                return RedirectToAction("Detail", "Home", new { id = product.Id });
+            }
 
             return RedirectToAction("Index", "Home");
         }
