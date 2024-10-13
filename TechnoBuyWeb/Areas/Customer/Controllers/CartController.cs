@@ -151,13 +151,13 @@ namespace TechnoBuyWeb.Areas.Customer.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        public IActionResult GetCartItemCount()
-        {
-            var claimsIdentity = (ClaimsIdentity?)User.Identity;
-            var userId = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        //public IActionResult GetCartItemCount()
+        //{
+        //    var claimsIdentity = (ClaimsIdentity?)User.Identity;
+        //    var userId = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            return PartialView("_CartIconPartial", ViewBag.CartQty = _cartService.GetCartQuantity(userId));
-        }
+        //    return PartialView("_CartIconPartial", ViewBag.CartQty = _cartService.GetCartQuantity(userId));
+        //}
 
         [HttpPost]
         public IActionResult MakeOrder(List<OrderItem> orderItems)

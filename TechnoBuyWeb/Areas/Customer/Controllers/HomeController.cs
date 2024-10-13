@@ -5,6 +5,7 @@ using System.Security.Claims;
 using TechnoBuy.DataAccess.Repository.IRepository;
 using TechnoBuy.DataAccess.Service.IService;
 using TechnoBuy.Models;
+using TechnoBuy.Models.ViewModels;
 
 namespace TechnoBuyWeb.Areas.Customer.Controllers
 {
@@ -77,16 +78,51 @@ namespace TechnoBuyWeb.Areas.Customer.Controllers
             var claimsIdentity = (ClaimsIdentity?)User.Identity;
             var userId = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            Product? objProduct = _unitOfWork.Product.Get(p => p.Id == id, includeProperties: "Category");
+            var product = _unitOfWork.Product.Get(p => p.Id == id, includeProperties: "Category,ProductComments.ApplicationUser");
+            List<ProductComment> productComments = _unitOfWork.ProductComment.GetAll(c => c.ProductId == id).ToList();
 
-            if (objProduct == null)
+            if (product == null)
             {
                 return NotFound();
             }
 
+            var productDetailVM = new ProductDetailVM
+            {
+                Product = product,
+                ProductComments = productComments,
+                NewComment = new ProductComment()
+            };
+
             ViewBag.CartQty = _cartService.GetCartQuantity(userId);
 
-            return View(objProduct);
+            return View(productDetailVM);
+        }
+
+        [HttpPost]
+        public IActionResult AddComment(ProductDetailVM productDetailVM)
+        {
+            var claimsIdentity = (ClaimsIdentity?)User.Identity;
+            var userId = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (userId == null)
+            {
+                return RedirectToAction("Login", "Account", new { area = "Identity" });
+            }
+
+            productDetailVM.NewComment.AppUserId = userId;
+            productDetailVM.NewComment.AppUserEmail = User.Identity.Name;
+
+            if (!ModelState.IsValid)
+            {
+                productDetailVM.Product = _unitOfWork.Product.Get(p => p.Id == productDetailVM.NewComment.ProductId, includeProperties: "Category,ApplicationUser");
+                productDetailVM.ProductComments = _unitOfWork.ProductComment.GetAll(c => c.ProductId == productDetailVM.NewComment.ProductId).ToList();
+                return View("Detail", productDetailVM);
+            }
+
+            _unitOfWork.ProductComment.Add(productDetailVM.NewComment);
+            _unitOfWork.Save();
+
+            return RedirectToAction("Detail", new {id = productDetailVM.NewComment.ProductId});
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

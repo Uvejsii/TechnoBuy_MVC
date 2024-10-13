@@ -37,5 +37,6 @@ namespace TechnoBuy.Models
         [ForeignKey("CategoryId")]
         [ValidateNever]
         public Category Category  { get; set; }
+        public ICollection<ProductComment> ProductComments { get; set; }
     }
 }

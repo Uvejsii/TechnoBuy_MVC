@@ -22,21 +22,6 @@
             }
 
         </div>
-        <div class="d-flex gap-3">
-            <a class="btn btn-success fw-bold" 
-                asp-controller="Home" 
-                asp-action="ChangePagination" 
-                asp-route-change="-1">
-                <
-            </a>
-            <p class="m-0">@ViewBag.PageNum</p>
-            <a class="btn btn-success fw-bold"
-               asp-controller="Home" 
-               asp-action="ChangePagination" 
-               asp-route-change="+1">
-                >
-            </a>
-        </div>
         <div class="w-25">
             <form asp-controller="Home" asp-action="Index" method="get" class="d-flex">
                 <input type="text" placeholder="Search a product..." class="form-control" name="searchQuery" />
@@ -84,5 +69,23 @@
                 </div>
             }
         }
+    </div>
+    <div class="d-flex justify-content-center">
+        <div class="d-flex align-items-center gap-3">
+            <a class="btn btn-success fw-bold"
+               asp-controller="Home"
+               asp-action="ChangePagination"
+               asp-route-change="-1">
+                <
+            </a>
+            <p class="m-0 fw-bold">@ViewBag.PageNum</p>
+            <a class="btn btn-success fw-bold"
+               asp-controller="Home"
+               asp-action="ChangePagination"
+               asp-route-change="+1">
+                >
+            </a>
+        </div>
+
     </div>
 </div>

@@ -1,36 +1,39 @@
 ﻿@model Category
 
-<div class="card shadow border-0 mt-4">
-    <div class="card-header bg-secondary bg-gradient ms-0 py-3">
-        <div class="row">
-            <div class="col-12 text-center">
-                <h2 class="text-white py-2">Update Category</h2>
+<div class="container">
+    <div class="card shadow border-0 mt-4">
+        <div class="card-header bg-secondary bg-gradient ms-0 py-3">
+            <div class="row">
+                <div class="col-12 text-center">
+                    <h2 class="text-white py-2">Update Category</h2>
+                </div>
             </div>
         </div>
-    </div>
-    <div class="card-body p-4">
-        <form method="post" class="row">
-            <div class="border p-3">
-                <div class="form-floating py-2 col-12">
-                    <input asp-for="Id" readonly class="form-control border-0 shadow" />
-                    <label asp-for="Id" class="ms-2"></label>
-                </div>
-                <div class="form-floating py-2 col-12">
-                    <input asp-for="Name" class="form-control border-0 shadow" />
-                    <label asp-for="Name" class="ms-2"></label>
-                    <span asp-validation-for="Name" class="text-danger"></span>
-                </div>
-                <div class="row pt-2">
-                    <div class="col-6 col-md-3">
-                        <button type="submit" class="btn btn-warning form-control">Update</button>
+        <div class="card-body p-4">
+            <form method="post" class="row">
+                <div class="border p-3">
+                    <div class="form-floating py-2 col-12">
+                        <input asp-for="Id" readonly class="form-control border-0 shadow" />
+                        <label asp-for="Id" class="ms-2"></label>
                     </div>
-                    <div class="col-6 col-md-4">
-                        <a asp-controller="Category" asp-action="Index" class="btn btn-outline-primary border form-control">Back to List</a>
+                    <div class="form-floating py-2 col-12">
+                        <input asp-for="Name" class="form-control border-0 shadow" />
+                        <label asp-for="Name" class="ms-2"></label>
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+                    <div class="row pt-2">
+                        <div class="col-6 col-md-3">
+                            <button type="submit" class="btn btn-warning form-control fw-bold">Update</button>
+                        </div>
+                        <div class="col-6 col-md-4">
+                            <a asp-controller="Category" asp-action="Index" class="btn btn-outline-primary border form-control">Back to List</a>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </form>
+            </form>
+        </div>
     </div>
+
 </div>
 
 @section Scripts {

@@ -57,5 +57,6 @@ namespace TechnoBuy.DataAccess.Data
         public DbSet<CartItem> CartItems { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderItem> OrderItems { get; set; }
+        public DbSet<ProductComment> ProductComments { get; set; }
     }
 }
