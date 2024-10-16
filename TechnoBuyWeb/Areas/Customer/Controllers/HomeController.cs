@@ -32,7 +32,7 @@ namespace TechnoBuyWeb.Areas.Customer.Controllers
 
             List<Product> objProductList = _unitOfWork.Product
                 .GetAll(p => (string.IsNullOrEmpty(searchQuery) || p.Name.Contains(searchQuery)) &&
-                              (!categoryId.HasValue || p.CategoryId == categoryId), null, null , pageNum, pageSize).ToList();
+                              (!categoryId.HasValue || p.CategoryId == categoryId), null, null, pageNum, pageSize).ToList();
 
             ViewBag.CartQty = _cartService.GetCartQuantity(userId);
             ViewBag.PageNum = pageNum;

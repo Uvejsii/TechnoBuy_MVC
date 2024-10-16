@@ -1,21 +1,21 @@
 ﻿@using System.Security.Claims
 @model ProductDetailVM
 
-<div class="container">
-    <div class="card shadow-lg border-0 my-5 rounded-3 overflow-hidden">
-        <div class="card-header bg-primary bg-gradient text-light py-2 text-center">
+<div class="container my-5">
+    <div class="card shadow-lg border-0 rounded-4 overflow-hidden" style="margin-bottom: 100px;">
+        <div class="card-header bg-primary bg-gradient text-light py-4 text-center position-relative">
             <h2 class="text-white text-uppercase fw-bold">@Model.Product.Name</h2>
             <p class="text-white-50 fs-5 m-0">by @Model.Product.Brand</p>
+            <div class="position-absolute top-50 end-0 translate-middle-y me-4">
+                <a asp-action="Index" class="btn btn-outline-light text-uppercase fw-bold px-4 py-2 rounded-pill">
+                    <i class="bi bi-arrow-left me-2"></i> Back to Home
+                </a>
+            </div>
         </div>
         <div class="card-body p-5">
             <div class="row">
-                <div class="col-12 text-start mb-4">
-                    <a asp-action="Index" class="btn btn-outline-secondary text-uppercase fw-bold px-4 py-2">
-                        <i class="bi bi-arrow-left me-2"></i> Back to Home
-                    </a>
-                </div>
                 <div class="col-lg-4 text-center mb-4">
-                    <img src="@Model.Product.ImageUrl" class="img-fluid rounded shadow-sm border" alt="@Model.Product.Name" style="max-height: 400px; object-fit: cover;" />
+                    <img src="@Model.Product.ImageUrl" class="img-fluid rounded-3 shadow-sm border" alt="@Model.Product.Name" style="max-height: 400px; object-fit: cover;" />
                 </div>
                 <div class="col-lg-7 offset-lg-1">
                     <span class="badge bg-info text-dark px-3 py-2 mb-3">Category: @Model.Product.Category.Name</span>
@@ -26,43 +26,55 @@
                     <div class="mb-4">
                         <p class="text-secondary">@Html.Raw(Model.Product.Description)</p>
                     </div>
-                    <div class="col-lg-6 col-12 border">
+                    <div class="col-lg-6 col-12 p-0">
                         <a asp-controller="Cart"
                            asp-action="AddToCart"
                            asp-route-id="@Model.Product.Id"
                            asp-route-isDetailPage="true"
-                           class="btn btn-success btn-lg text-uppercase fw-bold py-3 w-100">
+                           class="btn btn-success btn-lg text-uppercase fw-bold py-3 w-100 rounded-pill shadow">
                             <i class="bi bi-cart-fill me-2"></i> Add to Cart
                         </a>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-    <div class="card mt-5">
-        <div class="card-body">
-            <h4>Comments</h4>
+        <hr class="mx-5"/>
+        <div class="card-body p-5">
+            <h4 class="fw-bold mb-4">Comments (@Model.ProductComments.Count())</h4>
             <ul class="list-unstyled">
-                @foreach (var comment in Model.ProductComments)
+                @if (Model.ProductComments == null || !Model.ProductComments.Any())
                 {
-                    var claimsIdentity = (ClaimsIdentity?)User.Identity;
-                    var userId = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                    var isCurrentUser = comment.AppUserId == userId;
-
-                    <li>
-                        <strong>@comment.AppUserEmail @if (isCurrentUser)
-                            {
-                                <span>(You)</span>
-                            }:</strong> @comment.CommentText
-                        <p class="text-secondary">@comment.CreatedDate</p>
-                    </li>
+                    <p class="text-muted">This product has no comments yet.</p>
                 }
-                <form asp-action="AddComment" method="post">
-                    <div class="form-group">
-                        <textarea asp-for="NewComment.CommentText" class="form-control" placeholder="Add a comment" required></textarea>
+                else
+                {
+                    @foreach (var comment in Model.ProductComments)
+                    {
+                        var claimsIdentity = (ClaimsIdentity?)User.Identity;
+                        var userId = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                        var isCurrentUser = comment.AppUserId == userId;
+
+                        <li class="mb-4">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <strong class="text-dark">
+                                    @comment.AppUserEmail @if (isCurrentUser)
+                                    {
+                                        <span class="text-muted">(You)</span>
+                                    }:
+                                </strong>
+                                <span class="text-muted">@comment.CreatedDate.ToShortDateString()</span>
+                            </div>
+                            <p class="text-secondary">@comment.CommentText</p>
+                        </li>
+                    }
+                }
+                <form asp-action="AddComment" method="post" class="mt-4">
+                    <div class="form-floating mb-3">
+                        <textarea asp-for="NewComment.CommentText" class="form-control rounded-3 shadow-sm" placeholder="Add a comment" required></textarea>
+                        <label for="NewComment.CommentText">Add a comment</label>
                         <input type="hidden" asp-for="NewComment.ProductId" value="@Model.Product.Id" />
                     </div>
-                    <button type="submit" class="btn btn-primary mt-3">Add Comment</button>
+                    <button type="submit" class="btn btn-primary fw-bold px-4 py-2 rounded-pill">Add Comment</button>
                 </form>
             </ul>
         </div>

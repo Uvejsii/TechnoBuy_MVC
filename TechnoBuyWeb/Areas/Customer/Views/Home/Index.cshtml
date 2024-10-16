@@ -34,8 +34,8 @@
     <div class="row" id="product-list">
         @if(Model == null || !Model.Any())
         {
-            <h4 class="text-center mt-5 pt-5">No result for "@ViewBag.SearchQuery"</h4>
-            <a asp-controller="Home" asp-action="Index" class="w-auto mx-auto">Refresh search</a>
+            <h4 class="text-center mt-5 pt-5">No results for "@ViewBag.SearchQuery"</h4>
+            <a asp-controller="Home" asp-action="Index" class="w-auto mx-auto" style="margin-bottom: 300px;">Refresh search</a>
         }
         else
         {
