@@ -14,7 +14,6 @@
                         <i class="bi bi-chevron-down position-absolute top-50 end-0 translate-middle-y me-3"></i>
                     </div>
                 </form>
-
             }
             else
             {
@@ -44,7 +43,10 @@
                 <div class="col-lg-3 col-sm-6 mb-4">
                     <div class="card product-card border-0 shadow-lg h-100 position-relative">
                         <div class="badge bg-primary position-absolute top-0 end-0 mt-2 me-2 p-2 rounded-pill">New</div>
-                        <img src="@product.ImageUrl" class="card-img-top img-fluid p-3" alt="@product.Name" style="height: 220px; object-fit: contain;" />
+                        <a asp-controller="Home" asp-action="Detail" asp-route-id="@product.Id">
+                            <img src="@product.ImageUrl" class="card-img-top img-fluid p-3"
+                                 alt="@product.Name" style="height: 220px; object-fit: contain;" />
+                        </a>
                         <div class="card-body text-center p-4 bg-light rounded-bottom">
                             <h5 class="card-title text-uppercase fw-bold text-dark mb-1 text-truncate">@product.Name</h5>
                             <p class="card-subtitle text-muted mb-2">by <strong>@product.Brand</strong></p>
@@ -86,6 +88,5 @@
                 >
             </a>
         </div>
-
     </div>
 </div>

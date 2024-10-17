@@ -8,8 +8,11 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using TechnoBuy.DataAccess.Service;
 using TechnoBuy.DataAccess.Service.IService;
 using Stripe;
+using DotNetEnv;
 
 var builder = WebApplication.CreateBuilder(args);
+
+Env.Load();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
@@ -29,6 +32,12 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IEmailSender, EmailSender>();
 builder.Services.AddScoped<ICartService, CartService>();
 
+var stripeSecretKey = Environment.GetEnvironmentVariable("STRIPE_SECRET_KEY");
+var stripePublishableKey = Environment.GetEnvironmentVariable("STRIPE_PUBLISHABLE_KEY");
+
+builder.Configuration["Stripe:SecretKey"] = stripeSecretKey;
+builder.Configuration["Stripe:PublishableKey"] = stripePublishableKey;
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -42,7 +51,7 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
-StripeConfiguration.ApiKey = builder.Configuration.GetSection("Stripe:SecretKey").Get<string>();
+StripeConfiguration.ApiKey = stripeSecretKey;
 
 app.UseRouting();
 app.UseAuthentication();
