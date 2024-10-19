@@ -53,6 +53,42 @@
                 }
             </tbody>
         </table>
-
+        <div class="d-flex justify-content-center" style="margin-bottom: 75px">
+            <div class="d-flex align-items-center gap-3">
+                @if (ViewBag.PageNum == 1)
+                {
+                    <a class="btn btn-success fw-bold">
+                        &lt;
+                    </a>
+                }
+                else
+                {
+                    <a class="btn btn-success fw-bold"
+                       asp-controller="Product"
+                       asp-action="ChangePagination"
+                       asp-route-change="-1"
+                       asp-route-currentPageNum="@ViewBag.PageNum">
+                        &lt;
+                    </a>
+                }
+                <p class="m-0 fw-bold">@ViewBag.PageNum</p>
+                @if (ViewBag.HasNextPage)
+                {
+                    <a class="btn btn-success fw-bold"
+                       asp-controller="Product"
+                       asp-action="ChangePagination"
+                       asp-route-change="+1"
+                       asp-route-currentPageNum="@ViewBag.PageNum">
+                        &gt;
+                    </a>
+                }
+                else
+                {
+                    <a class="btn btn-success fw-bold">
+                        &gt;
+                    </a>
+                }
+            </div>
+        </div>
     }
 </div>

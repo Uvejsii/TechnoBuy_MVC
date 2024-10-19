@@ -29,25 +29,28 @@ namespace TechnoBuyWeb.Areas.Customer.Controllers
             var userId = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
             int pageSize = 8;
+            int totalProducts = _unitOfWork.Product.GetAll().Count();
 
             List<Product> objProductList = _unitOfWork.Product
                 .GetAll(p => (string.IsNullOrEmpty(searchQuery) || p.Name.Contains(searchQuery)) &&
-                              (!categoryId.HasValue || p.CategoryId == categoryId), null, null, pageNum, pageSize).ToList();
+                              (!categoryId.HasValue || p.CategoryId == categoryId), pageNumber: pageNum, pageSize: pageSize).ToList();
 
             ViewBag.CartQty = _cartService.GetCartQuantity(userId);
             ViewBag.PageNum = pageNum;
 
             var categories = _unitOfWork.Category.GetAll().ToList();
+            
             ViewBag.Categories = new SelectList(categories, "Id", "Name");
             ViewBag.SelectedCategory = categoryId;
             ViewBag.SearchQuery = searchQuery;
+            ViewBag.HasNextPage = (pageNum * pageSize) < totalProducts;
 
             return View(objProductList);
         }
 
-        public IActionResult ChangePagination(string change)
+        public IActionResult ChangePagination(string change, int currentPageNum)
         {
-            int pageNum = ViewBag.PageNum ?? 1;
+            int pageNum = currentPageNum;
 
             if (change == "+1")
             {

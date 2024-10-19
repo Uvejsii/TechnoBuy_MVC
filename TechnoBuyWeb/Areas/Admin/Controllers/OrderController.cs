@@ -24,19 +24,45 @@ namespace TechnoBuyWeb.Areas.Admin.Controllers
             _cartService = cartService;
         }
 
-        public IActionResult Index()
+        public IActionResult Index(int pageNum = 1)
         {
+            int pageSize = 7;
+
+            int totalOrders = _unitOfWork.Order.GetAll().Count();
+
             List<Order> orders = _unitOfWork.Order
                                             .GetAll(includeProperties: "OrderItems.Product,User")
-                                            .OrderByDescending(x => x.OrderDate)
+                                            .OrderByDescending(o => o.OrderDate)
+                                            .Skip((pageNum - 1) * pageSize)
+                                            .Take(pageSize)
                                             .ToList();
 
             var claimsIdentity = (ClaimsIdentity?)User.Identity;
             var userId = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
             ViewBag.CartQty = _cartService.GetCartQuantity(userId);
+            ViewBag.PageNum = pageNum;
+            ViewBag.HasNextPage = (pageNum * pageSize) < totalOrders;
 
             return View(orders);
+        }
+
+        public IActionResult ChangePagination(string change, int currentPageNum)
+        {
+            int pageNum = currentPageNum;
+
+            if (change == "+1")
+            {
+                pageNum++;
+            }
+            else if (change == "-1" && pageNum > 1)
+            {
+                pageNum--;
+            }
+                
+            ViewBag.PageNum = pageNum;
+
+            return RedirectToAction("Index", new {pageNum = pageNum});
         }
 
         public IActionResult Edit(int? id)

@@ -26,16 +26,39 @@ namespace TechnoBuyWeb.Areas.Admin.Controllers
             _webHostEnvironment = webHostEnvironment;
         }
 
-        public IActionResult Index()
+        public IActionResult Index(int pageNum = 1)
         {
             var claimsIdentity = (ClaimsIdentity?)User.Identity;
             var userId = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            List<Product> objProductList = _unitOfWork.Product.GetAll(includeProperties: "Category").ToList();
+            int pageSize = 6;
+            int totalProducts = _unitOfWork.Product.GetAll().Count();
+
+            List<Product> objProductList = _unitOfWork.Product.GetAll(includeProperties: "Category", pageNumber: pageNum, pageSize: pageSize).ToList();
             
             ViewBag.CartQty = _cartService.GetCartQuantity(userId);
-            
+            ViewBag.PageNum = pageNum;
+            ViewBag.HasNextPage = (pageNum * pageSize) < totalProducts;
+
             return View(objProductList);
+        }
+
+        public IActionResult ChangePagination(string change, int currentPageNum)
+        {
+            int pageNum = currentPageNum;
+
+            if (change == "+1")
+            {
+                pageNum++;
+            }
+            else if (change == "-1" && pageNum > 1)
+            {
+                pageNum--;
+            }
+
+            ViewBag.PageNum = pageNum;
+
+            return RedirectToAction("Index", new {pageNum = pageNum });
         }
 
         public IActionResult Upsert(int? id)

@@ -30,7 +30,7 @@
             </form>
         </div>
     </div>
-    <div class="row" id="product-list">
+    <div class="row products-list" id="product-list">
         @if(Model == null || !Model.Any())
         {
             <h4 class="text-center mt-5 pt-5">No results for "@ViewBag.SearchQuery"</h4>
@@ -74,19 +74,40 @@
     </div>
     <div class="d-flex justify-content-center">
         <div class="d-flex align-items-center gap-3">
-            <a class="btn btn-success fw-bold"
-               asp-controller="Home"
-               asp-action="ChangePagination"
-               asp-route-change="-1">
-                <
-            </a>
+            @if(ViewBag.PageNum == 1)
+            {
+                <a class="btn btn-success fw-bold">
+                    &lt;
+                </a>
+            }
+            else
+            {
+                <a class="btn btn-success fw-bold"
+                   asp-controller="Home"
+                   asp-action="ChangePagination"
+                   asp-route-change="-1"
+                   asp-route-currentPageNum="@ViewBag.PageNum">
+                    &lt;
+                </a>
+            }
             <p class="m-0 fw-bold">@ViewBag.PageNum</p>
-            <a class="btn btn-success fw-bold"
-               asp-controller="Home"
-               asp-action="ChangePagination"
-               asp-route-change="+1">
-                >
-            </a>
+            @if(ViewBag.HasNextPage)
+            {
+                <a class="btn btn-success fw-bold"
+                   id="inc"
+                   asp-controller="Home"
+                   asp-action="ChangePagination"
+                   asp-route-change="+1"
+                   asp-route-currentPageNum="@ViewBag.PageNum">
+                    &gt;
+                </a>
+            }
+            else
+            {
+                <a class="btn btn-success fw-bold">
+                    &gt;
+                </a>
+            }
         </div>
     </div>
 </div>

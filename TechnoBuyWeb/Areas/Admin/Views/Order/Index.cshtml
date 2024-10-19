@@ -17,6 +17,7 @@
         <table class="table table-bordered table-striped">
             <thead>
                 <tr>
+                    <th>Id</th>
                     <th>User Email</th>
                     <th>Order Total</th>
                     <th>Status</th>
@@ -30,6 +31,7 @@
                 @foreach (var order in Model)
                 {
                     <tr>
+                        <td>@order.Id</td>
                         <td>@order.User.Email</td>
                         <td>@order.TotalAmount.ToString("N2") $</td>
                         <td>@order.Status</td>
@@ -47,6 +49,42 @@
                 }
             </tbody>
         </table>
-
+        <div class="d-flex justify-content-center" style="margin-bottom: 75px;">
+            <div class="d-flex align-items-center gap-3">
+                @if(ViewBag.PageNum == 1)
+                {
+                    <a class="btn btn-success fw-bold">
+                        &lt;
+                    </a>
+                }
+                else
+                {
+                  <a class="btn btn-success fw-bold"
+                   asp-controller="Order"
+                   asp-action="ChangePagination"
+                   asp-route-change="-1"
+                   asp-route-currentPageNum="@ViewBag.PageNum">
+                    &lt;
+               </a>   
+                }
+               <p class="m-0 fw-bold">@ViewBag.PageNum</p>
+                @if (ViewBag.HasNextPage)
+                {
+                    <a class="btn btn-success fw-bold"
+                       asp-controller="Order"
+                       asp-action="ChangePagination"
+                       asp-route-change="+1"
+                       asp-route-currentPageNum="@ViewBag.PageNum">
+                        &gt;
+                    </a>
+                }
+                else
+                {
+                    <a class="btn btn-success fw-bold">
+                        &gt;
+                    </a>
+                }
+            </div>
+        </div>
     }
 </div>
