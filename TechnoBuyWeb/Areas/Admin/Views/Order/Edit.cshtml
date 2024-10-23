@@ -34,6 +34,14 @@
             <div class="col text-center">
                 <h5><i class="bi bi-calendar3"></i> @Model.Order.OrderDate.ToString("dd/MM/yyyy hh:mm:ss tt")</h5>
                 <h5><i class="bi bi-box-seam"></i> Current Status: <strong>@Model.Order.Status</strong></h5>
+                @if(Model.Order.PaymentMethod == PaymentMethod.Online)
+                {
+                    <h5><i class="bi bi-credit-card"></i> Payment Method: <strong>@Model.Order.PaymentMethod</strong></h5>
+                }
+                else
+                {
+                    <h5><i class="bi bi-cash-coin"></i> Payment Method: <strong>@Model.Order.PaymentMethod</strong></h5>
+                }
                 <div class="mt-3">
                     <label for="status" class="form-label">Update Order Status:</label>
                     <select id="orderStatusDropdown" class="form-select w-50 mx-auto" asp-for="Order.Status" asp-items="@Model.StatusList">

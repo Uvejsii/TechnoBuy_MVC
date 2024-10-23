@@ -153,9 +153,9 @@ namespace TechnoBuyWeb.Areas.Customer.Controllers
         }
 
         [HttpPost]
-        public IActionResult MakeOrder(List<OrderItem> orderItems)
+        public IActionResult MakeOrder(List<OrderItem> orderItems, PaymentMethod paymentMethod)
         {
-            var claimsIdentity = (ClaimsIdentity?)(User.Identity);
+            var claimsIdentity = (ClaimsIdentity?)User.Identity;
             var userId = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
             if (userId == null)
@@ -171,7 +171,8 @@ namespace TechnoBuyWeb.Areas.Customer.Controllers
                 OrderDate = DateTime.Now,
                 Status = OrderStatus.Pending,
                 TotalAmount = 0,
-                OrderItems = new List<OrderItem>()
+                OrderItems = new List<OrderItem>(),
+                PaymentMethod = paymentMethod
             };
 
             decimal totalAmount = 0;
@@ -180,7 +181,7 @@ namespace TechnoBuyWeb.Areas.Customer.Controllers
             var options = new SessionCreateOptions
             {
                 SuccessUrl = domain + $"Customer/Cart/OrderConfirmation",
-                CancelUrl = domain + "Identity/Account/Login",
+                CancelUrl = domain + "Customer/Cart/CancelOrder",
                 LineItems = new List<SessionLineItemOptions>(),
                 Mode = "payment",
             };
@@ -206,20 +207,24 @@ namespace TechnoBuyWeb.Areas.Customer.Controllers
 
                 totalAmount += product.Price * item.Quantity;
 
-                var sessionListItem = new SessionLineItemOptions
+                if (paymentMethod == PaymentMethod.Online)
                 {
-                    PriceData = new SessionLineItemPriceDataOptions
+                    var sessionListItem = new SessionLineItemOptions
                     {
-                        UnitAmount = (long?)(product.Price * 100),
-                        Currency = "usd",
-                        ProductData = new SessionLineItemPriceDataProductDataOptions
+                        PriceData = new SessionLineItemPriceDataOptions
                         {
-                            Name = product.Name,
-                        }
-                    },
-                    Quantity = item.Quantity
-                };
-                options.LineItems.Add(sessionListItem);
+                            UnitAmount = (long?)(product.Price * 100),
+                            Currency = "usd",
+                            ProductData = new SessionLineItemPriceDataProductDataOptions
+                            {
+                                Name = product.Name,
+                            }
+                        },
+                        Quantity = item.Quantity
+                    };
+
+                    options.LineItems.Add(sessionListItem);
+                }
             }
 
             order.TotalAmount = totalAmount;
@@ -228,14 +233,25 @@ namespace TechnoBuyWeb.Areas.Customer.Controllers
             _unitOfWork.CartItem.RemoveRange(cart.CartItems);
             _unitOfWork.Save();
 
-            var service = new SessionService();
-            Session session = service.Create(options);
+            if (paymentMethod == PaymentMethod.Cash)
+            {
+                return RedirectToAction("OrderItems");
+            }
 
-            TempData["Session"] = session.Id;
+            if (paymentMethod == PaymentMethod.Online)
+            {
+                var service = new SessionService();
+                Session session = service.Create(options);
 
-            Response.Headers.Add("Location", session.Url);
-            return new StatusCodeResult(303);
+                TempData["Session"] = session.Id;
+                Response.Headers.Add("Location", session.Url);
+                return new StatusCodeResult(303); 
+            }
+
+            return BadRequest("Invalid payment method.");
         }
+
+
 
         public IActionResult OrderItems()
         {

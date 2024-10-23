@@ -18,5 +18,7 @@ namespace TechnoBuy.Models
         public OrderStatus Status { get; set; }
         public ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
         public decimal TotalAmount { get; set; }
+        [Required]
+        public PaymentMethod PaymentMethod { get; set; }
     }
 }

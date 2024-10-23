@@ -93,6 +93,12 @@
                             <input type="hidden" name="orderItems[@Model.IndexOf(item)].ProductId" value="@item.ProductId" />
                             <input type="hidden" name="orderItems[@Model.IndexOf(item)].Quantity" value="@item.Quantity" />
                         }
+                        <label for="paymentMethod">Choose Payment Method:</label>
+                        <select name="paymentMethod" id="paymentMethod" class="form-select mt-1 mb-4" required>
+                            <option value="" disabled selected>-Select payment method-</option>
+                            <option value="Online">Online Payment</option>
+                            <option value="Cash">Cash on Delivery</option>
+                        </select>
                         <button type="submit" class="btn btn-primary w-100 fw-bold">Place Order</button>
                     </form>
                     <p class="mt-4">Shipping to <strong>@Model.First().Cart.User.City</strong> will take 2 weeks.</p>
@@ -101,3 +107,9 @@
         }
     </div>
 </div>
+
+@section Scripts {
+    @{
+        <partial name="_ValidationScriptsPartial" />
+    }
+}
