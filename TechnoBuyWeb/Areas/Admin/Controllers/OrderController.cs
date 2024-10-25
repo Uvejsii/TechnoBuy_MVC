@@ -25,15 +25,24 @@ namespace TechnoBuyWeb.Areas.Admin.Controllers
             _cartService = cartService;
         }
 
-        public IActionResult Index(string nameSearchQuery, OrderStatus? orderStatus, int pageNum = 1)
+        public IActionResult Index(string nameSearchQuery, string citySearchQuery, OrderStatus? orderStatus, PaymentMethod? paymentMethod, int pageNum = 1)
         {
-            Console.WriteLine($"nameSearchQuery: {nameSearchQuery}, orderStatus: {orderStatus}, pageNum: {pageNum}");
-
             int pageSize = 7;
 
             int totalOrders = _unitOfWork.Order.GetAll().Count();
 
+            var ordersQuery = _unitOfWork.Order.GetAll(includeProperties: "OrderItems.Product,User")
+                                               .Where(o => (string.IsNullOrEmpty(nameSearchQuery) || o.User.Email.ToLower().Contains(nameSearchQuery.ToLower())) &&
+                                                (string.IsNullOrEmpty(citySearchQuery) || (o.User.City != null && o.User.City.ToLower().Contains(citySearchQuery.ToLower()))) &&
+                                                (!orderStatus.HasValue || o.Status == orderStatus) && (!paymentMethod.HasValue || o.PaymentMethod == paymentMethod));
+
+            var orders = ordersQuery.OrderByDescending(o => o.OrderDate)
+                                    .Skip((pageNum - 1) * pageSize)
+                                    .Take(pageSize)
+                                    .ToList();
+
             var orderStatuses = Enum.GetValues(typeof(OrderStatus)).Cast<OrderStatus>();
+            var paymentMethods = Enum.GetValues(typeof(PaymentMethod)).Cast<PaymentMethod>();
 
             OrderVM orderVM = new()
             {
@@ -43,24 +52,14 @@ namespace TechnoBuyWeb.Areas.Admin.Controllers
                     Value = o.ToString(),
                     Selected = orderStatus.HasValue && o == orderStatus.Value
                 }),
-                Orders = _unitOfWork.Order
-                            .GetAll(o => (string.IsNullOrEmpty(nameSearchQuery) || o.User.Email.Contains(nameSearchQuery) &&
-                                          (!orderStatus.HasValue || o.Status == orderStatus.Value)),
-                                    includeProperties: "OrderItems.Product,User")
-                            .OrderByDescending(o => o.OrderDate)
-                            .Skip((pageNum - 1) * pageSize)
-                            .Take(pageSize)
-                            .ToList()
+                PaymentMethodList = paymentMethods.Select(pm => new SelectListItem
+                {
+                    Text = pm.ToString(),
+                    Value = pm.ToString(),
+                    Selected = paymentMethod.HasValue && pm == paymentMethod.Value
+                }),
+                Orders = orders
             };
-
-            //orderVM.Order = _unitOfWork.Order
-            //                                .GetAll(o => (string.IsNullOrEmpty(nameSearchQuery) || o.User.Email.Contains(nameSearchQuery) &&
-            //                                (!orderStatus.HasValue || o.Status == orderStatus.Value))
-            //                                , includeProperties: "OrderItems.Product,User")
-            //                                .OrderByDescending(o => o.OrderDate)
-            //                                .Skip((pageNum - 1) * pageSize)
-            //                                .Take(pageSize)
-            //                                .ToList();
 
             var claimsIdentity = (ClaimsIdentity?)User.Identity;
             var userId = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier)?.Value;

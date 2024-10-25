@@ -2,7 +2,7 @@
 
 <div class="container">
     <div class="row pt-4 pb-3">
-        <div class="col-12 border">
+        <div class="col-12 d-flex gap-3">
             <div class="w-25">
                 <form asp-controller="Order" asp-action="Index" method="get" class="d-flex">
                     <input type="text" placeholder="Search a user..." class="form-control" name="nameSearchQuery" />
@@ -12,25 +12,25 @@
                 </form>
             </div>
             <div class="w-25">
-                @* @if (ViewBag.OrderStatuses != null)
-                {
-                    <form>
-                        <div class="dropdown-divider">
-                            @Html.DropDownList("orderStatus",
-                                     ViewBag.OrderStatuses as SelectList,
-                                     "All Statuses",
-                                     new { @class = "form-control pe-5", onchange = "this.form.submit()" })
-                        </div>
-                    </form>
-                }
-                else
-                {
-                    <p>No statuses available</p>
-                } *@
                 <form asp-controller="Order" asp-action="Index" method="get">
-                    <select class="form-select" name="orderStatus" asp-for="Order.Status" asp-items="@Model.StatusList" onchange="this.form.submit()">
-                        <option value="">- Select Status -</option>
+                    <select class="form-select" name="orderStatus" asp-items="Model.StatusList" onchange="this.form.submit()">
+                        <option value="">All Order Statuses</option>
                     </select>
+                </form>
+            </div>
+            <div class="w-25">
+                <form asp-controller="Order" asp-action="Index" method="get">
+                    <select class="form-select" name="paymentMethod" asp-items="Model.PaymentMethodList" onchange="this.form.submit()">
+                        <option value="">All Payment Methods</option>
+                    </select>
+                </form>
+            </div>
+            <div class="w-25">
+                <form asp-controller="Order" asp-action="Index" method="get" class="d-flex">
+                    <input type="text" placeholder="Search a users city..." class="form-control" name="citySearchQuery" />
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-search"></i>
+                    </button>
                 </form>
             </div>
         </div>

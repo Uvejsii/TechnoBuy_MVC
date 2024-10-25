@@ -17,5 +17,7 @@ namespace TechnoBuy.Models.ViewModels
 
         [ValidateNever]
         public IEnumerable<SelectListItem> StatusList { get; set; }
+        [ValidateNever]
+        public IEnumerable<SelectListItem> PaymentMethodList { get; set; }
     }
 }

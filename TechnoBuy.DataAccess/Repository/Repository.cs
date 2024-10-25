@@ -42,7 +42,7 @@ namespace TechnoBuy.DataAccess.Repository
         }
 
         public IEnumerable<T> GetAll(Expression<Func<T, bool>>? filter = null, string? includeProperties = null, 
-            string? searchQuery = null, int pageNumber = 0, int pageSize = 0)
+            string? searchQuery = null, int pageNumber = 0, int pageSize = 0, string? citySearchQuery = null)
         {
             IQueryable<T> query = dbSet.AsQueryable();
 
@@ -53,9 +53,15 @@ namespace TechnoBuy.DataAccess.Repository
 
             if (!string.IsNullOrEmpty(searchQuery))
             {
-                query = query.Where(x => EF.Property<string>(x, "Name").Contains(searchQuery));
+                var lowerSearchQuery = searchQuery.ToLower();
+                query = query.Where(x => EF.Property<string>(x, "Name").ToLower().Contains(lowerSearchQuery));
             }
 
+            if (!string.IsNullOrEmpty(citySearchQuery))
+            {
+                var lowerCitySearchQuery = citySearchQuery.ToLower();
+                query = query.Where(x => EF.Property<string>(x, "City").ToLower().Contains(lowerCitySearchQuery));
+            }
             if (!string.IsNullOrEmpty(includeProperties))
             {
                 foreach (var includeProp in includeProperties.Split(new char[] {','}, StringSplitOptions.RemoveEmptyEntries))
