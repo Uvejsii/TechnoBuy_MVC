@@ -13,6 +13,9 @@ namespace TechnoBuy.Models.ViewModels
         public Order Order { get; set; }
 
         [ValidateNever]
+        public IEnumerable<Order> Orders { get; set; }
+
+        [ValidateNever]
         public IEnumerable<SelectListItem> StatusList { get; set; }
     }
 }

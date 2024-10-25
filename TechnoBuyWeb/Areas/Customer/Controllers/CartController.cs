@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Stripe.Checkout;
+using Stripe.Climate;
 using System.Security.Claims;
 using TechnoBuy.DataAccess.Repository.IRepository;
 using TechnoBuy.DataAccess.Service.IService;
@@ -165,7 +166,9 @@ namespace TechnoBuyWeb.Areas.Customer.Controllers
 
             var cart = _unitOfWork.Cart.Get(c => c.UserId == userId, includeProperties: "CartItems");
 
-            var order = new Order
+            decimal totalAmount = 0;
+
+            var order = new TechnoBuy.Models.Order
             {
                 UserId = userId,
                 OrderDate = DateTime.Now,
@@ -175,13 +178,11 @@ namespace TechnoBuyWeb.Areas.Customer.Controllers
                 PaymentMethod = paymentMethod
             };
 
-            decimal totalAmount = 0;
-
             var domain = "https://localhost:7038/";
             var options = new SessionCreateOptions
             {
-                SuccessUrl = domain + $"Customer/Cart/OrderConfirmation",
-                CancelUrl = domain + "Customer/Cart/CancelOrder",
+                SuccessUrl = domain + $"Customer/Cart/OrderConfirmation?sessionId={{CHECKOUT_SESSION_ID}}",
+                CancelUrl = domain + $"Customer/Cart/Index",
                 LineItems = new List<SessionLineItemOptions>(),
                 Mode = "payment",
             };
@@ -195,17 +196,16 @@ namespace TechnoBuyWeb.Areas.Customer.Controllers
                     return NotFound($"Product with ID {item.ProductId} not found.");
                 }
 
+                totalAmount += product.Price * item.Quantity;
+
                 var orderItem = new OrderItem
                 {
                     ProductId = item.ProductId,
                     Product = product,
-                    Quantity = item.Quantity,
-                    Order = order
+                    Quantity = item.Quantity
                 };
 
                 order.OrderItems.Add(orderItem);
-
-                totalAmount += product.Price * item.Quantity;
 
                 if (paymentMethod == PaymentMethod.Online)
                 {
@@ -229,12 +229,12 @@ namespace TechnoBuyWeb.Areas.Customer.Controllers
 
             order.TotalAmount = totalAmount;
 
-            _unitOfWork.Order.Add(order);
-            _unitOfWork.CartItem.RemoveRange(cart.CartItems);
-            _unitOfWork.Save();
-
             if (paymentMethod == PaymentMethod.Cash)
             {
+                _unitOfWork.Order.Add(order);
+                _unitOfWork.CartItem.RemoveRange(cart.CartItems);
+                _unitOfWork.Save();
+
                 return RedirectToAction("OrderItems");
             }
 
@@ -245,12 +245,11 @@ namespace TechnoBuyWeb.Areas.Customer.Controllers
 
                 TempData["Session"] = session.Id;
                 Response.Headers.Add("Location", session.Url);
-                return new StatusCodeResult(303); 
+                return new StatusCodeResult(303);
             }
 
             return BadRequest("Invalid payment method.");
         }
-
 
 
         public IActionResult OrderItems()
@@ -283,19 +282,79 @@ namespace TechnoBuyWeb.Areas.Customer.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        public IActionResult OrderConfirmation()
+        [HttpGet]
+        public async Task<IActionResult> OrderConfirmation(string sessionId)
         {
+            if (string.IsNullOrEmpty(sessionId))
+            {
+                return BadRequest("Session ID not provided.");
+            }
+
             var service = new SessionService();
-            Session session = service.Get(TempData["Session"].ToString());
+            var session = await service.GetAsync(sessionId);
+
+            if (session == null)
+            {
+                return NotFound("Session not found.");
+            }
 
             if (session.PaymentStatus == "paid")
             {
-                var transaction = session.PaymentIntentId.ToString();
+                var claimsIdentity = (ClaimsIdentity?)User.Identity;
+                var userId = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+                if (userId == null)
+                {
+                    return NotFound();
+                }
+
+                var cart = _unitOfWork.Cart.Get(c => c.UserId == userId, includeProperties: "CartItems");
+
+                var order = new TechnoBuy.Models.Order
+                {
+                    UserId = userId,
+                    OrderDate = DateTime.Now,
+                    Status = OrderStatus.Pending,
+                    TotalAmount = 0,
+                    OrderItems = new List<OrderItem>(),
+                    PaymentMethod = PaymentMethod.Online
+                };
+
+                decimal totalAmount = 0;
+
+                foreach (var cartItem in cart.CartItems)
+                {
+                    var product = _unitOfWork.Product.Get(p => p.Id == cartItem.ProductId);
+
+                    if (product == null)
+                    {
+                        return NotFound($"Product with ID {cartItem.ProductId} not found.");
+                    }
+
+                    var orderItem = new OrderItem
+                    {
+                        ProductId = product.Id,
+                        Product = product,
+                        Quantity = cartItem.Quantity,
+                        Order = order
+                    };
+
+                    order.OrderItems.Add(orderItem);
+                    totalAmount += product.Price * cartItem.Quantity;
+                }
+
+                order.TotalAmount = totalAmount;
+
+                _unitOfWork.Order.Add(order);
+                _unitOfWork.CartItem.RemoveRange(cart.CartItems);
+                _unitOfWork.Save();
+
                 return View("Success");
             }
 
-            return RedirectToAction("Login", "Account");
+            return View("OrderFailed");
         }
+
 
         public IActionResult Success()
         {

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Diagnostics;
 using System.Security.Claims;
 using TechnoBuy.DataAccess.Repository.IRepository;
 using TechnoBuy.DataAccess.Service.IService;
@@ -24,27 +25,57 @@ namespace TechnoBuyWeb.Areas.Admin.Controllers
             _cartService = cartService;
         }
 
-        public IActionResult Index(int pageNum = 1)
+        public IActionResult Index(string nameSearchQuery, OrderStatus? orderStatus, int pageNum = 1)
         {
+            Console.WriteLine($"nameSearchQuery: {nameSearchQuery}, orderStatus: {orderStatus}, pageNum: {pageNum}");
+
             int pageSize = 7;
 
             int totalOrders = _unitOfWork.Order.GetAll().Count();
 
-            List<Order> orders = _unitOfWork.Order
-                                            .GetAll(includeProperties: "OrderItems.Product,User")
-                                            .OrderByDescending(o => o.OrderDate)
-                                            .Skip((pageNum - 1) * pageSize)
-                                            .Take(pageSize)
-                                            .ToList();
+            var orderStatuses = Enum.GetValues(typeof(OrderStatus)).Cast<OrderStatus>();
+
+            OrderVM orderVM = new()
+            {
+                StatusList = orderStatuses.Select(o => new SelectListItem
+                {
+                    Text = o.ToString(),
+                    Value = o.ToString(),
+                    Selected = orderStatus.HasValue && o == orderStatus.Value
+                }),
+                Orders = _unitOfWork.Order
+                            .GetAll(o => (string.IsNullOrEmpty(nameSearchQuery) || o.User.Email.Contains(nameSearchQuery) &&
+                                          (!orderStatus.HasValue || o.Status == orderStatus.Value)),
+                                    includeProperties: "OrderItems.Product,User")
+                            .OrderByDescending(o => o.OrderDate)
+                            .Skip((pageNum - 1) * pageSize)
+                            .Take(pageSize)
+                            .ToList()
+            };
+
+            //orderVM.Order = _unitOfWork.Order
+            //                                .GetAll(o => (string.IsNullOrEmpty(nameSearchQuery) || o.User.Email.Contains(nameSearchQuery) &&
+            //                                (!orderStatus.HasValue || o.Status == orderStatus.Value))
+            //                                , includeProperties: "OrderItems.Product,User")
+            //                                .OrderByDescending(o => o.OrderDate)
+            //                                .Skip((pageNum - 1) * pageSize)
+            //                                .Take(pageSize)
+            //                                .ToList();
 
             var claimsIdentity = (ClaimsIdentity?)User.Identity;
             var userId = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
             ViewBag.CartQty = _cartService.GetCartQuantity(userId);
+            ViewBag.OrderStatuses = new SelectList(
+                Enum.GetValues(typeof(OrderStatus))
+                    .Cast<OrderStatus>()
+                    .Select(status => new { Id = (int)status, Name = status.ToString() }),
+                "Id", "Name"
+                );
             ViewBag.PageNum = pageNum;
             ViewBag.HasNextPage = (pageNum * pageSize) < totalOrders;
 
-            return View(orders);
+            return View(orderVM);
         }
 
         public IActionResult ChangePagination(string change, int currentPageNum)

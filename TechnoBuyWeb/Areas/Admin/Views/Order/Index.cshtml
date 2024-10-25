@@ -1,14 +1,41 @@
-﻿@model List<Order>
+﻿@model OrderVM
 
 <div class="container">
     <div class="row pt-4 pb-3">
-        <div class="col-6">
-            <h2 class="text-primary">Order List</h2>
-        </div>
-        <div class="col-6 text-end">
+        <div class="col-12 border">
+            <div class="w-25">
+                <form asp-controller="Order" asp-action="Index" method="get" class="d-flex">
+                    <input type="text" placeholder="Search a user..." class="form-control" name="nameSearchQuery" />
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </form>
+            </div>
+            <div class="w-25">
+                @* @if (ViewBag.OrderStatuses != null)
+                {
+                    <form>
+                        <div class="dropdown-divider">
+                            @Html.DropDownList("orderStatus",
+                                     ViewBag.OrderStatuses as SelectList,
+                                     "All Statuses",
+                                     new { @class = "form-control pe-5", onchange = "this.form.submit()" })
+                        </div>
+                    </form>
+                }
+                else
+                {
+                    <p>No statuses available</p>
+                } *@
+                <form asp-controller="Order" asp-action="Index" method="get">
+                    <select class="form-select" name="orderStatus" asp-for="Order.Status" asp-items="@Model.StatusList" onchange="this.form.submit()">
+                        <option value="">- Select Status -</option>
+                    </select>
+                </form>
+            </div>
         </div>
     </div>
-    @if (Model == null || !Model.Any())
+    @if (Model.Orders == null || !Model.Orders.Any())
     {
         <h4 class="test-center">No placed orders.</h4>
     }
@@ -21,23 +48,30 @@
                     <th>User Email</th>
                     <th>Order Total</th>
                     <th>Status</th>
-                    <th>Order Items</th>
+                    <th>Payment Method</th>
                     <th>Order Date</th>
                     <th>City</th>
                     <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach (var order in Model)
+                @foreach (var order in Model.Orders)
                 {
                     <tr>
                         <td>@order.Id</td>
                         <td>@order.User.Email</td>
                         <td>@order.TotalAmount.ToString("N2") $</td>
                         <td>@order.Status</td>
-                        <td>@string.Join(", ", order.OrderItems.Select(x => $"{x.Product.Name} {x.Quantity}x"))</td>
+                        <td>@order.PaymentMethod</td>
                         <td class="text-center">@order.OrderDate</td>
-                        <td>@order.User.City</td>
+                        @if(!string.IsNullOrEmpty(order.User.City))
+                        {
+                            <td>@order.User.City</td>
+                        }
+                        else
+                        {
+                            <td>No data</td>
+                        }
                         <td>
                             <div class="w-100 d-flex gap-2 align-items-center btn-group" role="group">
                                 <a asp-controller="Order" asp-action="Edit" asp-route-id="@order.Id" class="btn btn-warning d-flex flex-column w-50 fw-bold">
