@@ -30,7 +30,9 @@ namespace TechnoBuyWeb.Areas.Admin.Controllers
             int pageSize = 7;
 
             int totalOrders = _unitOfWork.Order.GetAll().Count();
-
+            int totalFilteredOrderStatuses = _unitOfWork.Order.GetAll().Where(o => o.Status == orderStatus).Count();
+            int totalFilteredOrderPaymentMethods = _unitOfWork.Order.GetAll().Where(o => o.PaymentMethod == paymentMethod).Count();
+            
             var ordersQuery = _unitOfWork.Order.GetAll(includeProperties: "OrderItems.Product,User")
                                                .Where(o => (string.IsNullOrEmpty(nameSearchQuery) || o.User.Email.ToLower().Contains(nameSearchQuery.ToLower())) &&
                                                 (string.IsNullOrEmpty(citySearchQuery) || (o.User.City != null && o.User.City.ToLower().Contains(citySearchQuery.ToLower()))) &&
@@ -63,6 +65,18 @@ namespace TechnoBuyWeb.Areas.Admin.Controllers
 
             var claimsIdentity = (ClaimsIdentity?)User.Identity;
             var userId = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            
+            if (!string.IsNullOrEmpty(nameSearchQuery))
+            {
+                int totalFilteredOrderUsers = _unitOfWork.Order.GetAll(includeProperties: "User").Where(o => o.User.Email.Contains(nameSearchQuery)).Count();
+                ViewBag.TotalOUsers = totalFilteredOrderUsers;
+            }
+
+            if (!string.IsNullOrEmpty(citySearchQuery))
+            {
+                int totalFilteredOrderUsersCities = _unitOfWork.Order.GetAll(includeProperties: "User").Where(o => o.User.City.ToLower().Contains(citySearchQuery.ToLower())).Count();
+                ViewBag.TotalOUC = totalFilteredOrderUsersCities;
+            }
 
             ViewBag.CartQty = _cartService.GetCartQuantity(userId);
             ViewBag.OrderStatuses = new SelectList(
@@ -73,6 +87,8 @@ namespace TechnoBuyWeb.Areas.Admin.Controllers
                 );
             ViewBag.PageNum = pageNum;
             ViewBag.HasNextPage = (pageNum * pageSize) < totalOrders;
+            ViewBag.TotalOS = totalFilteredOrderStatuses;
+            ViewBag.TotalOPm = totalFilteredOrderPaymentMethods;
 
             return View(orderVM);
         }

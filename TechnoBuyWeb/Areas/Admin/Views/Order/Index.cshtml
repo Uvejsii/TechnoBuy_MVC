@@ -35,6 +35,12 @@
             </div>
         </div>
     </div>
+    <div class="d-flex justify-content-between">
+        <p>Filtered users: <span class="fw-bold">(@(ViewBag.TotalOUsers ?? 0))</span></p>
+        <p>Filtered Order Statuses: <span class="fw-bold">(@ViewBag.TotalOS)</span></p>
+        <p>Filtered Order Payment Methods: <span class="fw-bold">(@ViewBag.TotalOPm)</span></p>
+        <p>Filtered users cities: <span class="fw-bold">(@(ViewBag.TotalOUC ?? 0))</span></p>
+    </div>
     @if (Model.Orders == null || !Model.Orders.Any())
     {
         <h4 class="test-center">No placed orders.</h4>

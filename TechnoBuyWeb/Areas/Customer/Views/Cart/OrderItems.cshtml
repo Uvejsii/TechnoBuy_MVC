@@ -57,7 +57,6 @@
                     <hr />
                     <p><strong>Order Status:</strong> <span class="badge rounded-pill @GetStatusBadgeClass(Model.Status.ToString())">@Model.Status</span></p>
                     <p class="text-muted">Estimated delivery in 7-14 days.</p>
-                    <a asp-controller="Order" asp-action="TrackOrder" asp-route-id="@Model.Id" class="btn btn-primary w-100 mt-3">Track Your Order</a>
                 </div>
             </div>
         </div>

@@ -102,6 +102,7 @@ namespace TechnoBuyWeb.Areas.Customer.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult AddComment(ProductDetailVM productDetailVM)
         {
             var claimsIdentity = (ClaimsIdentity?)User.Identity;
@@ -117,15 +118,58 @@ namespace TechnoBuyWeb.Areas.Customer.Controllers
 
             if (!ModelState.IsValid)
             {
-                productDetailVM.Product = _unitOfWork.Product.Get(p => p.Id == productDetailVM.NewComment.ProductId, includeProperties: "Category,ApplicationUser");
-                productDetailVM.ProductComments = _unitOfWork.ProductComment.GetAll(c => c.ProductId == productDetailVM.NewComment.ProductId).ToList();
-                return View("Detail", productDetailVM);
+                productDetailVM.ProductComments = _unitOfWork.ProductComment
+                    .GetAll(c => c.ProductId == productDetailVM.NewComment.ProductId)
+                    .ToList();
+                return PartialView("_CommentsSection", productDetailVM);
             }
 
-            _unitOfWork.ProductComment.Add(productDetailVM.NewComment);
-            _unitOfWork.Save();
+            try
+            {
+                _unitOfWork.ProductComment.Add(productDetailVM.NewComment);
+                _unitOfWork.Save();
 
-            return RedirectToAction("Detail", new {id = productDetailVM.NewComment.ProductId});
+                productDetailVM.ProductComments = _unitOfWork.ProductComment
+                    .GetAll(c => c.ProductId == productDetailVM.NewComment.ProductId)
+                    .ToList();
+
+                return PartialView("_CommentsSection", productDetailVM);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error adding comment: {ex.Message}");
+                return StatusCode(500, "Internal server error. Please try again.");
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult DeleteComment(int? commentId)
+        {
+            var claimsIdentity = (ClaimsIdentity?)User.Identity;
+            var userId = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (userId == null)
+            {
+                return RedirectToAction("Login", "Account", new {area = "Identity"});
+            }
+
+            var comment = _unitOfWork.ProductComment.Get(c => c.Id == commentId);
+            if (comment != null)
+            {
+                _unitOfWork.ProductComment.Remove(comment);
+                _unitOfWork.Save();
+            }
+
+            var productId = comment?.ProductId;
+            var productComments = _unitOfWork.ProductComment.GetAll(c => c.ProductId == productId).ToList();
+
+            var productDetailVM = new ProductDetailVM
+            {
+                ProductComments = productComments,
+            };
+
+            return PartialView("_CommentsSection", productDetailVM);
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

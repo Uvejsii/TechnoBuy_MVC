@@ -40,35 +40,10 @@
         </div>
         <hr class="mx-5"/>
         <div class="card-body p-5">
-            <h4 class="fw-bold mb-4">Comments (@Model.ProductComments.Count())</h4>
+            <h4 class="fw-bold mb-4">Comments (<span id="commentsCount">@Model.ProductComments.Count()</span>)</h4>
             <ul class="list-unstyled">
-                @if (Model.ProductComments == null || !Model.ProductComments.Any())
-                {
-                    <p class="text-muted">This product has no comments yet.</p>
-                }
-                else
-                {
-                    @foreach (var comment in Model.ProductComments)
-                    {
-                        var claimsIdentity = (ClaimsIdentity?)User.Identity;
-                        var userId = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                        var isCurrentUser = comment.AppUserId == userId;
-
-                        <li class="mb-4">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <strong class="text-dark">
-                                    @comment.AppUserEmail @if (isCurrentUser)
-                                    {
-                                        <span class="text-muted">(You)</span>
-                                    }:
-                                </strong>
-                                <span class="text-muted">@comment.CreatedDate.ToShortDateString()</span>
-                            </div>
-                            <p class="text-secondary">@comment.CommentText</p>
-                        </li>
-                    }
-                }
-                <form asp-action="AddComment" method="post" class="mt-4">
+                <form id="commentForm" asp-action="AddComment" method="post">
+                    @Html.AntiForgeryToken()
                     <div class="form-floating mb-3">
                         <textarea asp-for="NewComment.CommentText" class="form-control rounded-3 shadow-sm" placeholder="Add a comment" required></textarea>
                         <label for="NewComment.CommentText">Add a comment</label>
@@ -77,6 +52,67 @@
                     <button type="submit" class="btn btn-primary fw-bold px-4 py-2 rounded-pill">Add Comment</button>
                 </form>
             </ul>
+            <div id="commentsSection">
+                @await Html.PartialAsync("_CommentsSection", Model)
+            </div>
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $.ajaxSetup({
+                headers: {
+                    'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                }
+            });
+
+            $('#commentForm').submit(function (e) {
+                e.preventDefault();
+
+                $.ajax({
+                    type: "POST",
+                    url: '@Url.Action("AddComment", "Home")',
+                    data: $(this).serialize(),
+                    success: function (result) {
+                        $('#commentsSection').html(result);
+
+                        $('#commentForm textarea').val('');
+
+                        let commentsCount = $('#commentsSection li').length;
+                        $('#commentsCount').text(commentsCount);
+                    },
+                    error: function (xhr) {
+                        alert('Failed to add comment. Please try again.');
+                    }
+                });
+            });
+
+            console.log("Comment section script loaded");
+
+            $(document).on('click', '.delete-comment', function (e) {
+                e.preventDefault();
+                const commentId = $(this).data('comment-id');
+                console.log("Delete clicked for comment ID: " + commentId);
+
+                if (confirm("Are you sure you want to delete this comment?")) {
+                    $.ajax({
+                        type: "POST",
+                        url: '@Url.Action("DeleteComment", "Home")',
+                        data: { commentId: commentId },
+                        success: function (result) {
+                            $('#commentsSection').html(result);
+                            let commentsCount = $('#commentsSection li').length;
+                            $('#commentsCount').text(commentsCount);
+                        },
+                        error: function (xhr) {
+                            alert('Failed to delete comment. Please try again.');
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+}

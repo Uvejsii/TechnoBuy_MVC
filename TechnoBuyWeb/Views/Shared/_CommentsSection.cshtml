@@ -1,0 +1,45 @@
+﻿@using System.Security.Claims
+@model ProductDetailVM
+
+<div id="commentsSection">
+    <ul class="list-unstyled">
+        @if (Model.ProductComments == null || !Model.ProductComments.Any())
+        {
+            <p class="text-muted">This product has no comments yet.</p>
+        }
+        else
+        {
+            @foreach (var comment in Model.ProductComments)
+            {
+                var claimsIdentity = (ClaimsIdentity?)User.Identity;
+                var userId = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                var isCurrentUser = comment.AppUserId == userId;
+
+                <li class="">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <strong class="text-dark">
+                            @comment.AppUserEmail
+                            @if (isCurrentUser)
+                            {
+                                <span class="text-muted">(You)</span>
+                            }:
+                        </strong>
+                        <span class="text-muted">@comment.CreatedDate.ToShortDateString()</span>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <p class="text-secondary m-0">@comment.CommentText</p>
+                        </div>
+                        <div>
+                            @if (isCurrentUser)
+                            {
+                                <a class="delete-comment text-end btn btn-danger p-1 fw-bold" data-comment-id="@comment.Id">Delete</a>
+                            }
+                        </div>
+                    </div>
+                </li>
+                <hr/>
+            }
+        }
+    </ul>
+</div>

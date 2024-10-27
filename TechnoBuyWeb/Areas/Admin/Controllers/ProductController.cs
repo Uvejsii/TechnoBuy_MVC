@@ -26,7 +26,7 @@ namespace TechnoBuyWeb.Areas.Admin.Controllers
             _webHostEnvironment = webHostEnvironment;
         }
 
-        public IActionResult Index(int pageNum = 1)
+        public IActionResult Index(string searchQuery, int? categoryId, int pageNum = 1)
         {
             var claimsIdentity = (ClaimsIdentity?)User.Identity;
             var userId = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -34,11 +34,18 @@ namespace TechnoBuyWeb.Areas.Admin.Controllers
             int pageSize = 6;
             int totalProducts = _unitOfWork.Product.GetAll().Count();
 
-            List<Product> objProductList = _unitOfWork.Product.GetAll(includeProperties: "Category", pageNumber: pageNum, pageSize: pageSize).ToList();
-            
+            List<Product> objProductList = _unitOfWork.Product
+                                            .GetAll(p => (string.IsNullOrEmpty(searchQuery) || p.Name.Contains(searchQuery)) &&
+                                            (!categoryId.HasValue || p.CategoryId == categoryId), 
+                                            includeProperties: "Category", pageNumber: pageNum, pageSize: pageSize)
+                                            .ToList();
+
+            var categories = _unitOfWork.Category.GetAll().ToList();
+
             ViewBag.CartQty = _cartService.GetCartQuantity(userId);
             ViewBag.PageNum = pageNum;
             ViewBag.HasNextPage = (pageNum * pageSize) < totalProducts;
+            ViewBag.Categories = new SelectList(categories, "Id", "Name");
 
             return View(objProductList);
         }

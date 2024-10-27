@@ -2,10 +2,26 @@
 
 <div class="container">
     <div class="row pt-4 pb-3">
-        <div class="col-6">
-            <h2 class="text-primary">Product List</h2>
+        <div class="col-4">
+            <form class="position-relative w-75">
+                <div class="dropdown-wrapper">
+                    @Html.DropDownList("categoryId",
+                            ViewBag.Categories as SelectList,
+                            "All Categories",
+                            new { @class="form-control", onchange = "this.form.submit()" })
+                    <i class="bi bi-chevron-down position-absolute top-50 end-0 translate-middle-y me-3"></i>
+                </div>
+            </form>
         </div>
-        <div class="col-6 text-end">
+        <div class="col-4">
+            <form asp-controller="Product" asp-action="Index" method="get" class="d-flex">
+                <input type="text" placeholder="Search a product..." class="form-control" name="searchQuery" />
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-search"></i>
+                </button>
+            </form>
+        </div>
+        <div class="col-4 text-end">
             <a asp-controller="Product" asp-action="Upsert" class="btn btn-success fw-bold">
                 <i class="bi bi-plus-circle"></i> Create New Product
             </a>
