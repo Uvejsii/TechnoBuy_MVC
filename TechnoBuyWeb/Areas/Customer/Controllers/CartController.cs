@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Stripe.Checkout;
 using Stripe.Climate;
 using System.Security.Claims;
+using System.Text.Json;
 using TechnoBuy.DataAccess.Repository.IRepository;
 using TechnoBuy.DataAccess.Service.IService;
 using TechnoBuy.Models;
@@ -48,15 +49,19 @@ namespace TechnoBuyWeb.Areas.Customer.Controllers
             return View(cartItems);
         }
 
-        public IActionResult AddToCart(int id, bool isDetailPage)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public JsonResult AddToCart(int id)
         {
+            Console.WriteLine($"Product ID: {JsonSerializer.Serialize(id)}");
+
             var claimsIdentity = (ClaimsIdentity?)User.Identity;
             var userId = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
             var product = _unitOfWork.Product.Get(p => p.Id == id);
             if (product == null)
             {
-                return NotFound();
+                return Json(new { success = false, message = "Product not found." });
             }
 
             var cart = _unitOfWork.Cart.Get(c => c.UserId == userId);
@@ -73,7 +78,7 @@ namespace TechnoBuyWeb.Areas.Customer.Controllers
             }
 
             var cartItem = _unitOfWork.CartItem.Get(ci => ci.ProductId == product.Id && ci.CartId == cart.Id);
-            if (cartItem != null) 
+            if (cartItem != null)
             {
                 cartItem.Quantity += 1;
                 _unitOfWork.CartItem.Update(cartItem);
@@ -92,12 +97,18 @@ namespace TechnoBuyWeb.Areas.Customer.Controllers
 
             _unitOfWork.Save();
 
-            if (isDetailPage)
-            {
-                return RedirectToAction("Detail", "Home", new { id = product.Id });
-            }
+            var cartItemCount = _unitOfWork.CartItem.GetAll(ci => ci.CartId == cart.Id).Sum(ci => ci.Quantity);
 
-            return RedirectToAction("Index", "Home");
+            return Json(new AddToCartResponse { Success = true, Message = "Item added to cart successfully!", CartQuantity = cartItemCount });
+        }
+
+        public IActionResult GetCartQuantityPartial()
+        {
+            var claimsIdentity = (ClaimsIdentity?)User.Identity;
+            var userId = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            var cartQuantity = _cartService.GetCartQuantity(userId);
+            return PartialView("_CartQuantityPartial", cartQuantity);
         }
 
         public IActionResult Remove(int? id)

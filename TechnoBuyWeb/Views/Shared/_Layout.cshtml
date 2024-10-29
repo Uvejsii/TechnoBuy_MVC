@@ -22,12 +22,9 @@
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav ms-auto">
                         <li class="nav-item me-3">
-                            <a class="nav-link position-relative text-dark" asp-area="Customer" asp-controller="Cart" asp-action="Index">
-                                <i class="bi bi-cart3 fs-4"></i>
-                                <span class="position-absolute top-25 start-100 translate-middle badge rounded-pill bg-primary mt-2">
-                                    @(ViewBag.CartQty ?? 0)
-                                </span>
-                            </a>
+                            <div id="cart-quantity-container">
+                                @await Html.PartialAsync("_CartQuantityPartial", (int)(ViewBag.CartQty ?? 0))
+                            </div>
                         </li>
                         <li class="nav-item me-3 align-self-center">
                             <a class="nav-link text-dark fw-semibold" asp-area="Customer" asp-controller="Cart" asp-action="OrderItems">

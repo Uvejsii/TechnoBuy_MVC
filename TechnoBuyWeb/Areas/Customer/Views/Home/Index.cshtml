@@ -52,14 +52,13 @@
                             <p class="card-subtitle text-muted mb-2">by <strong>@product.Brand</strong></p>
                             <p class="text-success fs-4 fw-bold mb-3">@product.Price.ToString("N2") $</p>
                             <div class="d-grid gap-2">
-                                <a asp-controller="Cart"
-                                   asp-action="AddToCart"
-                                   asp-route-id="@product.Id"
-                                   asp-route-isDetailPage="false"
-                                   class="btn btn-outline-success fw-bold rounded-pill">
-                                    <i class="bi bi-cart-fill me-2"></i>Add to Cart
-                                </a>
-
+                                <form id="addToCartForm-@product.Id" asp-action="AddToCart" asp-controller="Cart" method="post" class="add-to-cart-form">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@product.Id" />
+                                    <button type="submit" class="btn btn-outline-success fw-bold rounded-pill add-to-cart-btn w-100">
+                                        <i class="bi bi-cart-fill me-2"></i>Add to Cart
+                                    </button>
+                                </form>
                                 <a asp-action="Detail"
                                    asp-route-id="@product.Id"
                                    class="btn btn-outline-primary fw-bold rounded-pill">
@@ -111,3 +110,40 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        $.ajaxSetup({
+            headers: {
+                'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+            }
+        });
+
+        $(document).on('submit', '.add-to-cart-form', function (e) {
+            e.preventDefault();
+
+            const form = $(this);
+
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("AddToCart", "Cart")',
+                data: form.serialize(),
+                success: function (result) {
+                    if (result.success) {
+                        alert(result.message);
+
+                        $.get('@Url.Action("GetCartQuantityPartial", "Cart")', function (html) {
+                            $('#cart-quantity-container').html(html);
+                        });
+                    } else {
+                        alert(result.message);
+                    }
+                },
+                error: function (xhr) {
+                    alert('Failed to add product to cart. Please try again.');
+                }
+            });
+        });
+    </script>
+}
