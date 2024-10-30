@@ -130,18 +130,22 @@
                 url: '@Url.Action("AddToCart", "Cart")',
                 data: form.serialize(),
                 success: function (result) {
-                    if (result.success) {
-                        alert(result.message);
-
+                    if (result.redirectUrl) {
+                        window.href = result.redirectUrl;
+                    } else if (result.success) {
                         $.get('@Url.Action("GetCartQuantityPartial", "Cart")', function (html) {
-                            $('#cart-quantity-container').html(html);
+                            $('#cart-quantity-span').html(html);
                         });
                     } else {
                         alert(result.message);
                     }
                 },
                 error: function (xhr) {
-                    alert('Failed to add product to cart. Please try again.');
+                    if (xhr.status === 401) {
+                        window.location.href = '@Url.Action("Login", "Account", new { area = "Identity" })';
+                    } else {
+                        alert('Failed to add product to cart. Please try again.');
+                    }
                 }
             });
         });

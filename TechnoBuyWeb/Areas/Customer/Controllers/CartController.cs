@@ -58,10 +58,15 @@ namespace TechnoBuyWeb.Areas.Customer.Controllers
             var claimsIdentity = (ClaimsIdentity?)User.Identity;
             var userId = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
+            if (userId == null)
+            {
+                return Json(new AddToCartResponse { RedirectUrl = Url.Action("Login", "Account"), Success = false, Message = "Please Login to add products to cart!" });
+            }
+
             var product = _unitOfWork.Product.Get(p => p.Id == id);
             if (product == null)
             {
-                return Json(new { success = false, message = "Product not found." });
+                return Json(new AddToCartResponse { Success = false, Message = "Item not found!" });
             }
 
             var cart = _unitOfWork.Cart.Get(c => c.UserId == userId);

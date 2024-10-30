@@ -1,4 +1,4 @@
-﻿@using System.Security.Claims
+﻿﻿@using System.Security.Claims
 @model ProductDetailVM
 
 <div class="container my-5">
@@ -27,14 +27,6 @@
                         <p class="text-secondary">@Html.Raw(Model.Product.Description)</p>
                     </div>
                     <div class="col-lg-6 col-12 p-0">
-                        <a asp-controller="Cart"
-                           asp-action="AddToCart"
-                           asp-route-id="@Model.Product.Id"
-                           asp-route-isDetailPage="true"
-                           class="btn btn-success btn-lg text-uppercase fw-bold py-3 w-100 rounded-pill shadow">
-                            <i class="bi bi-cart-fill me-2"></i> Add to Cart
-                        </a>
-
                         <form id="addToCartForm-@Model.Product.Id" asp-action="AddToCart" asp-controller="Cart" method="post" class="add-to-cart-form">
                             @Html.AntiForgeryToken()
                             <input type="hidden" name="id" value="@Model.Product.Id" />
@@ -46,7 +38,7 @@
                 </div>
             </div>
         </div>
-        <hr class="mx-5"/>
+        <hr class="mx-5" />
         <div class="card-body p-5">
             <h4 class="fw-bold mb-4">Comments (<span id="commentsCount">@Model.ProductComments.Count()</span>)</h4>
             <ul class="list-unstyled">
@@ -87,7 +79,9 @@
                     url: '@Url.Action("AddToCart", "Cart")',
                     data: form.serialize(),
                     success: function (result) {
-                        if (result.success) {
+                        if (result.redirectUrl) {
+                            window.href = result.redirectUrl;
+                        } else if (result.success) {
                             alert(result.message);
 
                             $.get('@Url.Action("GetCartQuantityPartial", "Cart")', function (html) {
@@ -98,7 +92,11 @@
                         }
                     },
                     error: function (xhr) {
-                        alert('Failed to add product to cart. Please try again.');
+                        if (xhr.status === 401) {
+                            window.location.href = '@Url.Action("Login", "Account", new { area = "Identity" })';
+                        } else {
+                            alert('Failed to add product to cart. Please try again.');
+                        }
                     }
                 });
             });
@@ -119,7 +117,11 @@
                         $('#commentsCount').text(commentsCount);
                     },
                     error: function (xhr) {
-                        alert('Failed to add comment. Please try again.');
+                        if (xhr.status === 401) {
+                            window.location.href = '@Url.Action("Login", "Account", new { area = "Identity" })';
+                        } else {
+                            alert('Failed to add comment. Please try again.');
+                        }
                     }
                 });
             });

@@ -110,7 +110,7 @@ namespace TechnoBuyWeb.Areas.Customer.Controllers
 
             if (userId == null)
             {
-                return RedirectToAction("Login", "Account", new { area = "Identity" });
+                return Unauthorized();
             }
 
             productDetailVM.NewComment.AppUserId = userId;
