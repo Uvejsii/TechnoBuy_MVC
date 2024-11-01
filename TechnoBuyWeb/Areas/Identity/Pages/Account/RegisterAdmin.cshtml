@@ -1,11 +1,11 @@
 ﻿@page
-@model RegisterModel
+@model RegisterAdminModel
 
 <div class="d-flex align-items-center justify-content-center min-vh-100 bg-light">
     <div class="card shadow-lg border-0 p-4" style="max-width: 600px; width: 100%; border-radius: 15px;">
         <div class="card-body">
-            <h2 class="text-center mb-4 text-primary">Register</h2>
-            <p class="text-center text-muted">Create a new account to enjoy all the features.</p>
+            <h2 class="text-center mb-4 text-primary">Register an Admin</h2>
+            <p class="text-center text-muted">Create a new Admin account.</p>
 
             <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="needs-validation" novalidate>
                 <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>

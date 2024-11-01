@@ -1,0 +1,81 @@
+﻿@model ApplicationUser
+
+<div class="mx-3 py-4">
+    <div class="mb-3 d-flex align-items-center justify-content-between">
+        <a class="btn btn-success fw-bold" asp-action="Index">
+            <i class="bi bi-arrow-left-circle"></i> Back to List
+        </a>
+        <strong class="fs-3 text-center">@Model.Email's Order History</strong>
+        <h5 class="m-0">Orders Made (<span class="text-decoration-underline">@Model.Orders.Count()</span>)</h5>
+    </div>
+    <div class="row row-cols-1 row-cols-md-2 g-4">
+        @foreach (var order in Model.Orders)
+        {
+            <div class="col">
+                <div class="card shadow border-1">
+                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                        <h5 class="card-title m-0">Order Id #@order.Id</h5>
+                        <span class="badge rounded-pill text-bg-light">@order.OrderDate.ToString("MMMM dd, yyyy")</span>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-unstyled mb-3">
+                            <li>
+                                @if(order.PaymentMethod == PaymentMethod.Cash)
+                                {
+                                    <i class="bi bi-cash-coin text-success"></i>
+                                }
+                                else
+                                {
+                                    <i class="bi bi-credit-card-fill text-success"></i>
+                                }
+                                <strong>Payment Method:</strong> @order.PaymentMethod
+                            </li>
+                            <li>
+                                <i class="bi bi-cash-stack text-warning"></i>
+                                <strong>Total:</strong> $@order.TotalAmount.ToString("N2")
+                            </li>
+                            <li>
+                                <i class="bi bi-calendar-event-fill text-info"></i>
+                                <strong>Time:</strong> @order.OrderDate.ToString("hh:mm tt")
+                            </li>
+                            <li>
+                                <i class="bi bi-flag-fill"></i>
+                                <strong>Status:</strong>
+                                <span class="badge rounded-pill">@order.Status</span>
+                            </li>
+                        </ul>
+                        <h6 class="fw-bold text-muted">Shipping Address</h6>
+                        <p class="text-secondary">@Model.StreetAddress, @Model.City, @Model.Country</p>
+                        <h6 class="fw-bold text-muted mt-4">Items</h6>
+                        <ul class="list-group list-group-flush">
+                            @foreach (var item in order.OrderItems)
+                            {
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <span>
+                                        <i class="bi bi-box-seam text-primary"></i> <strong>@item.Product.Name</strong>
+                                    </span>
+                                    <span>@item.Quantity x $@item.Product.Price.ToString("N2")</span>
+                                    <span class="fw-bold">$@((item.Quantity * item.Product.Price).ToString("N2"))</span>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function GetStatusColor(status) {
+            switch (status) {
+                case "Pending": return "#fbbf24"; // Yellow
+                case "Shipped": return "#3b82f6"; // Blue
+                case "Delivered": return "#10b981"; // Green
+                case "Cancelled": return "#ef4444"; // Red
+                default: return "#9ca3af"; // Gray for unknown statuses
+            }
+        }
+    </script>
+}

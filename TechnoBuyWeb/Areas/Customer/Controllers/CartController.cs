@@ -100,11 +100,12 @@ namespace TechnoBuyWeb.Areas.Customer.Controllers
                 _unitOfWork.CartItem.Add(cartItem);
             }
 
+            TempData["success"] = "Added to cart successfully.";
             _unitOfWork.Save();
 
             var cartItemCount = _unitOfWork.CartItem.GetAll(ci => ci.CartId == cart.Id).Sum(ci => ci.Quantity);
 
-            return Json(new AddToCartResponse { Success = true, Message = "Item added to cart successfully!", CartQuantity = cartItemCount });
+            return Json(new AddToCartResponse { Success = true, Message = TempData["success"].ToString(), CartQuantity = cartItemCount });
         }
 
         public IActionResult GetCartQuantityPartial()

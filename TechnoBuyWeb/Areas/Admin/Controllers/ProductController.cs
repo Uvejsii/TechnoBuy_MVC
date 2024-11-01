@@ -131,10 +131,12 @@ namespace TechnoBuyWeb.Areas.Admin.Controllers
                 if (productVM.Product.Id == 0)
                 {
                     _unitOfWork.Product.Add(productVM.Product);
+                    TempData["success"] = "The product has been added successfully.";
                 }
                 else
                 {
                     _unitOfWork.Product.Update(productVM.Product);
+                    TempData["success"] = "The product has been updated successfully.";
                 }
 
                 _unitOfWork.Save();
@@ -214,6 +216,7 @@ namespace TechnoBuyWeb.Areas.Admin.Controllers
 
             _unitOfWork.Product.Remove(productVM.Product);
             _unitOfWork.Save();
+            TempData["success"] = "The product has been deleted successfully.";
 
             return RedirectToAction("Index");
         }

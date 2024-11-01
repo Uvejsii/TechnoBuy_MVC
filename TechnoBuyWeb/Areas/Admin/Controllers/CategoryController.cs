@@ -50,7 +50,7 @@ namespace TechnoBuyWeb.Areas.Admin.Controllers
             {
                 _unitOfWork.Category.Add(category);
                 _unitOfWork.Save();
-
+                TempData["success"] = "The category has been created successfully.";
                 return RedirectToAction("Index");
             }
             return View();
@@ -85,7 +85,7 @@ namespace TechnoBuyWeb.Areas.Admin.Controllers
             {
                 _unitOfWork.Category.Update(category);
                 _unitOfWork.Save();
-
+                TempData["success"] = "The category has been updated successfully.";
                 return RedirectToAction("Index");
             }
 
@@ -126,6 +126,7 @@ namespace TechnoBuyWeb.Areas.Admin.Controllers
 
             _unitOfWork.Category.Remove(categoryFromDb);
             _unitOfWork.Save();
+            TempData["success"] = "The category has been deleted successfully.";
 
             return RedirectToAction("Index");
         }

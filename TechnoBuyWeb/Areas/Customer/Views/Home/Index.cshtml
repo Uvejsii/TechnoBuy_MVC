@@ -136,8 +136,10 @@
                         $.get('@Url.Action("GetCartQuantityPartial", "Cart")', function (html) {
                             $('#cart-quantity-span').html(html);
                         });
+
+                        toastr.success(result.message);
                     } else {
-                        alert(result.message);
+                        toastr.error(result.message);
                     }
                 },
                 error: function (xhr) {

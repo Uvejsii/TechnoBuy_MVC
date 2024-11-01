@@ -82,13 +82,13 @@
                         if (result.redirectUrl) {
                             window.href = result.redirectUrl;
                         } else if (result.success) {
-                            alert(result.message);
-
                             $.get('@Url.Action("GetCartQuantityPartial", "Cart")', function (html) {
-                                $('#cart-quantity-container').html(html);
+                                $('#cart-quantity-span').html(html);
                             });
+
+                            toastr.success(result.message);
                         } else {
-                            alert(result.message);
+                            toastr.error(result.message);
                         }
                     },
                     error: function (xhr) {
@@ -115,12 +115,14 @@
 
                         let commentsCount = $('#commentsSection li').length;
                         $('#commentsCount').text(commentsCount);
+
+                        toastr.success("Comment added successfully.");
                     },
                     error: function (xhr) {
                         if (xhr.status === 401) {
                             window.location.href = '@Url.Action("Login", "Account", new { area = "Identity" })';
                         } else {
-                            alert('Failed to add comment. Please try again.');
+                            toastr.error('Failed to add comment. Please try again.');
                         }
                     }
                 });
@@ -139,9 +141,10 @@
                             $('#commentsSection').html(result);
                             let commentsCount = $('#commentsSection li').length;
                             $('#commentsCount').text(commentsCount);
+                            toastr.success("Comment deleted successfully.");
                         },
                         error: function (xhr) {
-                            alert('Failed to delete comment. Please try again.');
+                            toastr.error('Failed to delete comment. Please try again.');
                         }
                     });
                 }

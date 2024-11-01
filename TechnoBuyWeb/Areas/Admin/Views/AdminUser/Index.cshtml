@@ -1,0 +1,36 @@
+﻿@model List<ApplicationUser>
+
+<div class="container pt-4">
+    <div class="text-end mb-3">
+        <a class="btn btn-primary fw-bold" asp-area="Identity" asp-page="/Account/RegisterAdmin"><i class="bi bi-plus-circle"></i> Add Admin</a>
+    </div>
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>Email</th>
+                <th>Phone Number</th>
+                <th>Country</th>
+                <th>City</th>
+                <th>Address</th>
+                <th>Orders History</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var user in Model)
+            {
+                <tr>
+                    <td>@user.Email</td>
+                    <td>@user.PhoneNumber</td>
+                    <td>@user.Country</td>
+                    <td>@user.City</td>
+                    <td>@user.StreetAddress</td>
+                    <td class="text-center">
+                        <a asp-controller="AdminUser" asp-action="UserDetail" asp-route-id="@user.Id" class="btn btn-success fw-bold">
+                            View Order History
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
