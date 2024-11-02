@@ -20,3 +20,19 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+@media (max-width: 768px) {
+    .navbar-nav .nav-item {
+        margin-bottom: 1rem;
+        border-bottom: 1px solid grey;
+    }
+
+    #cart-quantity-span {
+        top: -0.25rem;
+        right: -0.5rem;
+    }
+
+    .mobile-top {
+        display: none;
+    }
+}

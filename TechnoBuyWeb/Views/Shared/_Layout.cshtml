@@ -14,7 +14,7 @@
     <header>
         <nav class="navbar navbar-expand-lg navbar-light bg-light bg-gradient fixed-top shadow-sm px-3">
             <div class="container-fluid">
-                <a class="navbar-brand fw-bold text-uppercase text-primary" asp-area="" asp-controller="Home" asp-action="Index">
+                <a class="navbar-brand fw-bold text-uppercase text-primary d-flex align-items-center" asp-area="" asp-controller="Home" asp-action="Index">
                     <i class="bi bi-shop-window me-2"></i>TechnoBuy
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -22,7 +22,7 @@
                 </button>
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav ms-auto">
-                        <li class="nav-item me-3">
+                        <li class="nav-item me-3 d-flex align-items-center">
                             <a class="nav-link position-relative text-dark" asp-area="Customer" asp-controller="Cart" asp-action="Index">
                                 <i class="bi bi-cart3 fs-4"></i>
                                 <span id="cart-quantity-span" class="position-absolute top-25 start-100 translate-middle badge rounded-pill bg-primary mt-2">
@@ -30,14 +30,14 @@
                                 </span>
                             </a>
                         </li>
-                        <li class="nav-item me-3 align-self-center">
+                        <li class="nav-item me-3 d-flex align-items-center">
                             <a class="nav-link text-dark fw-semibold" asp-area="Customer" asp-controller="Cart" asp-action="OrderItems">
                                 <i class="bi bi-clock-history me-1"></i> Last Order
                             </a>
                         </li>
                         @if (User.IsInRole(SD.Role_Admin))
                         {
-                            <li class="nav-item dropdown align-self-center border rounded-2 shadow-sm">
+                            <li class="nav-item dropdown d-flex align-self-center align-items-center border shadow-sm me-3">
                                 <a class="nav-link dropdown-toggle text-dark fw-semibold" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                     <i class="bi bi-tools me-1"></i> Content Management
                                 </a>
@@ -52,7 +52,7 @@
                                 </ul>
                             </li>
                         }
-                        <li class="nav-item align-self-center">
+                        <li class="nav-item d-flex align-items-center">
                             <partial name="_LoginPartial" />
                         </li>
                     </ul>
